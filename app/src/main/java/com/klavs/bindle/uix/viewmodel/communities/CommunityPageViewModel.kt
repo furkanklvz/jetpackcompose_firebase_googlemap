@@ -1,20 +1,27 @@
 package com.klavs.bindle.uix.viewmodel.communities
 
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
-import com.klavs.bindle.data.entity.Community
-import com.klavs.bindle.data.entity.CommunityRoles
-import com.klavs.bindle.data.entity.JoinedCommunities
-import com.klavs.bindle.data.entity.JoiningRequestForCommunity
+import com.klavs.bindle.R
+import com.klavs.bindle.data.datastore.AppPref
+import com.klavs.bindle.data.entity.community.Community
+import com.klavs.bindle.data.entity.sealedclasses.CommunityRoles
+import com.klavs.bindle.data.entity.Event
+import com.klavs.bindle.data.entity.RequestForCommunity
 import com.klavs.bindle.data.entity.Member
+import com.klavs.bindle.data.entity.Post
 import com.klavs.bindle.data.repo.auth.AuthRepository
 import com.klavs.bindle.data.repo.firestore.FirestoreRepository
 import com.klavs.bindle.data.repo.storage.StorageRepository
@@ -26,6 +33,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,100 +43,266 @@ class CommunityPageViewModel @Inject constructor(
     private val storageRepo: StorageRepository,
     private val authRepo: AuthRepository,
     auth: FirebaseAuth,
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val appPref: AppPref
 ) : ViewModel() {
 
-    private val _currentUser = MutableStateFlow(auth.currentUser)
-    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
 
-    private val _userRolePriority = MutableStateFlow(CommunityRoles.Member.rolePriority)
-    val userRolePriority: StateFlow<Int> = _userRolePriority.asStateFlow()
+    private val _userRolePriority = MutableStateFlow<Int?>(null)
+    val userRolePriority: StateFlow<Int?> = _userRolePriority.asStateFlow()
 
-    private val _amIMember = MutableStateFlow(true)
-    val amIMember: StateFlow<Boolean> = _amIMember.asStateFlow()
 
-    var currentUserJob: Job? = null
+    val rejectRequestState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val acceptRequestState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val removeMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val promoteMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val demoteMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val updateCommunityPictureState = mutableStateOf<Resource<Any?>>(Resource.Idle())
+    val updateCommunityFieldState = mutableStateOf<Resource<Any?>>(Resource.Idle())
+    val changeAdminState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val leaveCommunityState = mutableStateOf<Resource<String>>(Resource.Idle())
+    val upcomingEventsState = mutableStateOf<Resource<List<Event>>>(Resource.Idle())
+
+    private val _members = MutableStateFlow<Resource<List<Member>>>(Resource.Idle())
+    val members: StateFlow<Resource<List<Member>>> = _members.asStateFlow()
+
+
+    private val _community = MutableStateFlow<Resource<Community>>(Resource.Idle())
+    val community: StateFlow<Resource<Community>> = _community.asStateFlow()
+
+    private val _didISendRequest = MutableStateFlow<Boolean?>(null)
+    val didISendRequest: StateFlow<Boolean?> = _didISendRequest.asStateFlow()
+
+    private val _numberOfMembers = MutableStateFlow<Int?>(null)
+    val numberOfMembers: StateFlow<Int?> = _numberOfMembers.asStateFlow()
+
+    private val _numberOfRequests = MutableStateFlow<Int?>(null)
+    val numberOfRequests: StateFlow<Int?> = _numberOfRequests.asStateFlow()
+
+    private val _joiningRequests =
+        MutableStateFlow<Resource<List<RequestForCommunity>>>(Resource.Idle())
+    val joiningRequests: StateFlow<Resource<List<RequestForCommunity>>> =
+        _joiningRequests.asStateFlow()
+
+    private val _numOfEvents = MutableStateFlow<Int?>(null)
+    val numOfEvents: StateFlow<Int?> = _numOfEvents.asStateFlow()
+
+    val createPostResource = mutableStateOf<Resource<Post>>(Resource.Idle())
+
+    private var communityJob: Job? = null
+
+    var lastMember: DocumentSnapshot? = null
+    var lastRequest: DocumentSnapshot? = null
+
+
     var myStatusJob: Job? = null
+    private var listenToDidISendRequestJob: Job? = null
 
+    fun stopListeningToDidISendRequest() {
+        listenToDidISendRequestJob?.cancel()
+        listenToDidISendRequestJob = null
+    }
 
-    init {
-        currentUserJob = viewModelScope.launch(Dispatchers.Main) {
-            authRepo.getCurrentUser().collect { firebaseUser ->
-                _currentUser.value = firebaseUser
+    fun createPost(post: Post, communityId: String, currentUser: FirebaseUser) {
+        createPostResource.value = Resource.Loading()
+        viewModelScope.launch(Dispatchers.Main) {
+            if (_userRolePriority.value != null) {
+                if (post.imageUrl != null) {
+                    val imageRef = "postPictures/${UUID.randomUUID()}"
+                    val pictureUrl = storageRepo.uploadImage(
+                        imageUri = post.imageUrl.toUri(),
+                        path = imageRef,
+                        maxSize = 720
+                    ).data?.toString()
+                    val postRef =
+                        db.collection("communities").document(communityId).collection("posts")
+                    val addPostToFirestoreResource = firestoreRepo.addDocument(
+                        collectionRef = postRef,
+                        data = post.copy(imageUrl = pictureUrl)
+                    )
+                    if (addPostToFirestoreResource is Resource.Success && addPostToFirestoreResource.data != null) {
+                        createPostResource.value = Resource.Success(
+                            post.copy(
+                                id = addPostToFirestoreResource.data,
+                                userPhotoUrl = currentUser.photoUrl?.toString(),
+                                userName = currentUser.displayName,
+                                numOfComments = 0,
+                                numOfLikes = 0,
+                                liked = false,
+                                userRolePriority = _userRolePriority.value!!
+                            )
+                        )
+                    } else {
+                        createPostResource.value =
+                            Resource.Error(messageResource = R.string.sharing_post_error_message)
+                    }
+
+                } else {
+                    val postRef =
+                        db.collection("communities").document(communityId).collection("posts")
+                    val addPostToFirestoreResource = firestoreRepo.addDocument(
+                        collectionRef = postRef,
+                        data = post
+                    )
+                    if (addPostToFirestoreResource is Resource.Success && addPostToFirestoreResource.data != null) {
+                        createPostResource.value = Resource.Success(
+                            post.copy(
+                                id = addPostToFirestoreResource.data,
+                                userPhotoUrl = currentUser.photoUrl?.toString(),
+                                userName = currentUser.displayName,
+                                numOfComments = 0,
+                                numOfLikes = 0,
+                                liked = false,
+                                userRolePriority = _userRolePriority.value!!
+                            )
+                        )
+                    } else {
+                        createPostResource.value =
+                            Resource.Error(messageResource = R.string.sharing_post_error_message)
+                    }
+                }
+            } else {
+                Log.d("createPost", "myRolePriority.value: ${_userRolePriority.value}")
+                createPostResource.value =
+                    Resource.Error(messageResource = R.string.you_are_not_a_member_of_the_community_anymore)
+            }
+
+        }
+    }
+
+    fun sendJoinRequest(communityId: String, myUid: String, newTickets: Long) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val data = RequestForCommunity(
+                uid = myUid,
+                requestDate = Timestamp.now(),
+            )
+            val requestsRef =
+                db.collection("communities").document(communityId).collection("joiningRequests")
+            val result = firestoreRepo.addDocument(
+                documentName = data.uid,
+                collectionRef = requestsRef,
+                data = data
+            )
+            if (result is Resource.Success) {
+                val userRef = db.collection("users").document(myUid)
+                firestoreRepo.updateField(
+                    documentRef = userRef,
+                    fieldName = "tickets",
+                    data = newTickets
+                )
             }
         }
     }
 
-    fun listenToMyStatus(communityId: String) {
-        if (currentUser.value != null) {
-            myStatusJob = viewModelScope.launch(Dispatchers.Main) {
-                val joinedCommunitiesRef = db.collection("users").document(currentUser.value!!.uid)
-                    .collection("joinedCommunities").document(communityId)
-                firestoreRepo.getDocumentWithListener(
-                    docRef = joinedCommunitiesRef
-                ).collect { resource ->
-                    _amIMember.value = if (resource is Resource.Success) {
-                        if (resource.data != null) {
-                            resource.data.exists()
-                        } else {
-                            false
-                        }
-                    } else {
-                        true
-                    }
-                    _userRolePriority.value = if (resource is Resource.Success) {
-                        if (resource.data != null) {
-                            if (resource.data.exists()) {
-                                resource.data.data?.get("rolePriority")
-                                    ?.let { (it as Long).toInt() }
-                                    ?: CommunityRoles.Member.rolePriority
-                            } else {
-                                CommunityRoles.Member.rolePriority
-                            }
-                        } else {
-                            CommunityRoles.Member.rolePriority
-                        }
-                    } else {
-                        CommunityRoles.Member.rolePriority
-                    }
+    fun joinTheCommunity(communityId: String, myUid: String, newTickets: Long) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val membersRef =
+                db.collection("communities").document(communityId).collection("members")
+            val memberData = Member(
+                uid = myUid,
+                rolePriority = CommunityRoles.Member.rolePriority
+            )
+            val memberResource = firestoreRepo.addDocument(
+                documentName = myUid,
+                collectionRef = membersRef,
+                data = memberData
+            )
+            if (memberResource is Resource.Success) {
+                launch {
+                    val userRef = db.collection("users").document(myUid)
+                    firestoreRepo.updateField(
+                        documentRef = userRef,
+                        fieldName = "tickets",
+                        data = newTickets
+                    )
                 }
             }
         }
     }
 
-    val deleteRequestState = mutableStateOf<Resource<String>>(Resource.Idle())
-    val acceptRequestState = mutableStateOf<Resource<String>>(Resource.Idle())
-    val removeMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
-    val promoteMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
-    val demoteMemberState = mutableStateOf<Resource<String>>(Resource.Idle())
-    val updateCommunityPictureState = mutableStateOf<Resource<Any>>(Resource.Idle())
+    fun deleteTheCommunity(communityId: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val eventRef = db.collection("communities").document(communityId)
+            firestoreRepo.deleteDocument(
+                documentRef = eventRef
+            )
+        }
+    }
+
+    private fun listenToDidISendRequest(communityId: String, myUid: String) {
+        Log.d("communityPage", "listenToDidISendRequest called")
+        Log.d("communityPage", "communityId: $communityId")
+        listenToDidISendRequestJob?.cancel()
+        listenToDidISendRequestJob = viewModelScope.launch(Dispatchers.Main) {
+            val requestsRef =
+                db.collection("communities").document(communityId).collection("joiningRequests")
+            firestoreRepo.memberCheck(
+                collectionRef = requestsRef,
+                fieldName = "uid",
+                value = myUid
+            ).collect { resource ->
+                _didISendRequest.value = resource.data
+            }
+        }
+    }
+
+    fun getUpcomingEvents(communityId: String) {
+        upcomingEventsState.value = Resource.Loading()
+        viewModelScope.launch(Dispatchers.Main) {
+            val eventsRef =
+                db.collection("events")
+                    .whereGreaterThan("date", Timestamp.now())
+                    .whereArrayContains("linkedCommunities", communityId)
+                    .orderBy("date", Query.Direction.ASCENDING)
+            upcomingEventsState.value = firestoreRepo.getEvents(
+                query = eventsRef
+            )
+        }
+    }
 
 
-    private val _members = MutableStateFlow<Resource<List<Member>>>(Resource.Idle())
-    val members: StateFlow<Resource<List<Member>>> = _members.asStateFlow()
+    fun listenToMyStatus(communityId: String, myUid: String) {
+        myStatusJob = viewModelScope.launch(Dispatchers.Main) {
+            val memberRef = db.collection("communities").document(communityId)
+                .collection("members").document(myUid)
+            firestoreRepo.getDocumentWithListener(
+                docRef = memberRef
+            ).collect { resource ->
+                _userRolePriority.value = if (resource is Resource.Success) {
+                    if (resource.data != null) {
+                        if (resource.data.exists()) {
+                            resource.data.data?.get("rolePriority")
+                                ?.let { (it as? Long)?.toInt() }
+                        } else {
+                            listenToDidISendRequest(
+                                communityId = communityId,
+                                myUid = myUid
+                            )
+                            null
+                        }
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            }
+        }
 
-    private val _community = MutableStateFlow<Resource<Community>>(Resource.Idle())
-    val community: StateFlow<Resource<Community>> = _community.asStateFlow()
+    }
 
-    private val _numberOfMembers = MutableStateFlow<Resource<Int>>(Resource.Idle())
-    val numberOfMembers: StateFlow<Resource<Int>> = _numberOfMembers.asStateFlow()
 
-    private val _numberOfRequests = MutableStateFlow<Resource<Int>>(Resource.Idle())
-    val numberOfRequests: StateFlow<Resource<Int>> = _numberOfRequests.asStateFlow()
-
-    private val _joiningRequests =
-        MutableStateFlow<Resource<List<JoiningRequestForCommunity>>>(Resource.Idle())
-    val joiningRequests: StateFlow<Resource<List<JoiningRequestForCommunity>>> =
-        _joiningRequests.asStateFlow()
-
-    private val _numOfActiveEvents = MutableStateFlow<Resource<Int>>(Resource.Idle())
-    val numOfActiveEvents: StateFlow<Resource<Int>> = _numOfActiveEvents.asStateFlow()
-
-    var communityJob: Job? = null
-
-    var lastMember: DocumentSnapshot? = null
-    var lastRequest: DocumentSnapshot? = null
-
+    fun updateCommunityField(communityId: String, changedFieldName: String, newValue: Any) {
+        updateCommunityFieldState.value = Resource.Loading()
+        viewModelScope.launch {
+            val communityRef = db.collection("communities").document(communityId)
+            updateCommunityFieldState.value = firestoreRepo.updateField(
+                documentRef = communityRef,
+                fieldName = changedFieldName,
+                data = newValue
+            )
+        }
+    }
 
     fun getMembersWithPaging(communityId: String, pageSize: Int) {
         _members.value = Resource.Loading()
@@ -140,9 +315,13 @@ class CommunityPageViewModel @Inject constructor(
                 lastDocument = lastMember
             )
             if (resource is Resource.Success) {
-                lastMember = resource.data!!.lastDocument
-                val memberList = resource.data.querySnapshot.mapNotNull { memberDoc ->
-                    val userDoc = firestoreRepo.getUserData(memberDoc["uid"] as String)
+                lastMember = if (resource.data!!.size() == pageSize) {
+                    resource.data.lastOrNull()
+                } else {
+                    null
+                }
+                val memberList = resource.data.mapNotNull { memberDoc ->
+                    val userDoc = firestoreRepo.getUserData((memberDoc["uid"] as? String) ?: "")
                     if (userDoc is Resource.Success) {
                         memberDoc.toObject(Member::class.java).copy(
                             profileImageUrl = userDoc.data!!.profilePictureUrl,
@@ -154,7 +333,7 @@ class CommunityPageViewModel @Inject constructor(
                 }
                 _members.value = Resource.Success(data = memberList)
             } else {
-                _members.value = Resource.Error(message = resource.message!!)
+                _members.value = Resource.Error(messageResource = resource.messageResource!!)
             }
         }
     }
@@ -170,103 +349,136 @@ class CommunityPageViewModel @Inject constructor(
                 lastDocument = lastRequest
             )
             if (resource is Resource.Success) {
-                lastRequest = resource.data!!.lastDocument
-                val requestList = resource.data.querySnapshot.mapNotNull { requestDoc ->
+                lastRequest = if (resource.data!!.size() == pageSize) {
+                    resource.data.lastOrNull()
+                } else {
+                    null
+                }
+                val requestList = resource.data.mapNotNull { requestDoc ->
                     val userDoc = firestoreRepo.getUserData(requestDoc.id)
                     if (userDoc is Resource.Success) {
-                        requestDoc.toObject(JoiningRequestForCommunity::class.java).copy(
+                        requestDoc.toObject(RequestForCommunity::class.java).copy(
                             userName = userDoc.data!!.userName,
                             profilePictureUrl = userDoc.data.profilePictureUrl
                         )
                     } else {
-                        requestDoc.toObject(JoiningRequestForCommunity::class.java)
+                        requestDoc.toObject(RequestForCommunity::class.java)
                     }
                 }
                 _joiningRequests.value = Resource.Success(data = requestList)
             } else {
-                _joiningRequests.value = Resource.Error(message = resource.message!!)
+                _joiningRequests.value =
+                    Resource.Error(messageResource = resource.messageResource!!)
             }
         }
     }
 
     fun getNumberOfRequests(communityId: String) {
         viewModelScope.launch {
-            _numberOfRequests.value = Resource.Loading()
             val requestsRef =
                 db.collection("communities").document(communityId).collection("joiningRequests")
-            firestoreRepo.countDocuments(requestsRef).collect { resource ->
-                _numberOfRequests.value = resource
-            }
+            _numberOfRequests.value = firestoreRepo.countDocumentsWithoutResource(
+                query = requestsRef
+            )
         }
     }
 
     fun getNumOfMembers(communityId: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            _numberOfMembers.value = Resource.Loading()
             val membersRef =
                 db.collection("communities").document(communityId).collection("members")
-            firestoreRepo.countDocuments(membersRef).collect { resource ->
-                _numberOfMembers.value = resource
+            _numberOfMembers.value = firestoreRepo.countDocumentsWithoutResource(
+                query = membersRef
+            )
+            if (_numberOfMembers.value != null) {
+                val communityRef = db.collection("communities").document(communityId)
+                firestoreRepo.updateField(
+                    documentRef = communityRef,
+                    fieldName = "numOfMembers",
+                    data = _numberOfMembers.value
+                )
             }
         }
     }
 
-    fun getNumOfActiveEvents(communityId: String) {
+    fun getNumOfEvents(communityId: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            _numOfActiveEvents.value = Resource.Loading()
             val eventsRef =
-                db.collection("communities").document(communityId).collection("events")
-                    .whereGreaterThan("eventDate", System.currentTimeMillis())
-            firestoreRepo.countDocuments(query = eventsRef).collect { resource ->
-                _numOfActiveEvents.value = resource
+                db.collection("events").whereArrayContains("linkedCommunities", communityId)
+
+            _numOfEvents.value = firestoreRepo.countDocumentsWithoutResource(eventsRef)
+            if (_numOfEvents.value != null) {
+                val communityRef = db.collection("communities").document(communityId)
+                firestoreRepo.updateField(
+                    documentRef = communityRef,
+                    fieldName = "numOfEvents",
+                    data = _numOfEvents.value
+                )
             }
         }
     }
 
 
-    fun getCommunity(communityId: String) {
+    fun listenToCommunity(communityId: String) {
         _community.value = Resource.Loading()
         communityJob = viewModelScope.launch {
-            getNumOfMembers(communityId)
-            getNumOfActiveEvents(communityId)
             val communityRef = db.collection("communities").document(communityId)
             firestoreRepo.getDocumentWithListener(
                 docRef = communityRef
             ).collect { resource ->
                 if (resource is Resource.Success) {
-                    _community.value =
-                        Resource.Success(
-                            data = resource.data!!.toObject(Community::class.java)!!
-                                .copy(id = communityId)
-                        )
+                    if (resource.data != null) {
+                        if (resource.data.exists()) {
+                            val communityObject = resource.data.toObject(Community::class.java)
+                                ?.copy(id = communityId)
+                            if (communityObject != null) {
+                                _community.value =
+                                    Resource.Success(
+                                        data = communityObject
+                                    )
+                            } else {
+                                _community.value =
+                                    Resource.Error(messageResource = R.string.something_went_wrong)
+                            }
+                        } else {
+                            _community.value =
+                                Resource.Error(messageResource = R.string.community_has_been_deleted)
+                        }
+                    } else {
+                        _community.value =
+                            Resource.Error(messageResource = R.string.something_went_wrong)
+                    }
+
                 } else {
-                    _community.value = Resource.Error(message = resource.message!!)
+                    _community.value =
+                        Resource.Error(messageResource = R.string.something_went_wrong)
                 }
             }
         }
     }
 
-    fun deleteRequest(communityId: String, uid: String) {
-        deleteRequestState.value = Resource.Loading()
+    fun rejectRequest(communityId: String, uid: String) {
+        rejectRequestState.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.Main) {
             val docRef =
                 db.collection("communities").document(communityId).collection("joiningRequests")
                     .document(uid)
-            val result = firestoreRepo.deleteDocument(documentRef = docRef)
-            deleteRequestState.value = result
+            rejectRequestState.value = firestoreRepo.deleteDocument(documentRef = docRef)
+            if (rejectRequestState.value is Resource.Success) {
+                firestoreRepo.refundTicket(
+                    uid = uid,
+                    amount = 2
+                )
+            }
         }
     }
 
-    fun acceptRequest(community: JoinedCommunities, requestObject: JoiningRequestForCommunity) {
+    fun acceptRequest(communityId: String, uid: String) {
         acceptRequestState.value = Resource.Loading()
         viewModelScope.launch {
-            val member = Member(
-                uid = requestObject.uid!!,
-                rolePriority = 2
-            )
             acceptRequestState.value = firestoreRepo.acceptJoiningRequestForCommunity(
-                member = member,
-                community = community
+                uid = uid,
+                communityId = communityId
             )
         }
     }
@@ -316,11 +528,11 @@ class CommunityPageViewModel @Inject constructor(
                     updateCommunityPictureState.value = firestoreRepo.updateField(
                         documentRef = communityRef,
                         fieldName = "communityPictureUrl",
-                        data = uploadImageState.data!!.toString()
+                        data = uploadImageState.data?.toString()
                     )
                 } else {
                     updateCommunityPictureState.value =
-                        Resource.Error(message = uploadImageState.message!!)
+                        Resource.Error(messageResource = R.string.something_went_wrong_try_again_later)
                 }
             } else {
                 updateCommunityPictureState.value = firestoreRepo.updateField(
@@ -334,6 +546,55 @@ class CommunityPageViewModel @Inject constructor(
                     )
                 }
             }
+        }
+
+    }
+
+    fun changeAdmin(communityId: String, uid: String, myUid: String) {
+        changeAdminState.value = Resource.Loading()
+        viewModelScope.launch(Dispatchers.IO) {
+            val currentAdminMemberRef =
+                db.collection("communities").document(communityId).collection("members")
+                    .document(myUid)
+            val newAdminMemberRef =
+                db.collection("communities").document(communityId).collection("members")
+                    .document(uid)
+            val batch = db.batch()
+            batch.update(
+                currentAdminMemberRef,
+                "rolePriority",
+                CommunityRoles.Moderator.rolePriority
+            )
+            batch.update(newAdminMemberRef, "rolePriority", CommunityRoles.Admin.rolePriority)
+            try {
+                batch.commit().await()
+                changeAdminState.value = Resource.Success(data = uid)
+            } catch (e: Exception) {
+                Log.e("error from datasource", "changeAdmin: $e")
+                FirebaseCrashlytics.getInstance().recordException(e)
+                changeAdminState.value =
+                    Resource.Error(messageResource = R.string.something_went_wrong_try_again_later)
+            }
+        }
+
+    }
+
+    fun leaveTheCommunity(communityId: String, myUid: String) {
+        leaveCommunityState.value = Resource.Loading()
+        viewModelScope.launch(Dispatchers.Main) {
+            val memberRef =
+                db.collection("communities").document(communityId).collection("members")
+                    .document(myUid)
+            val result = firestoreRepo.deleteDocument(
+                documentRef = memberRef
+            )
+            if (result is Resource.Success) {
+                appPref.removePinnedCommunity(
+                    userId = myUid,
+                    communityId = communityId
+                )
+            }
+            leaveCommunityState.value = result
         }
 
     }

@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.LockReset
-import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -22,29 +20,38 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseUser
+import com.klavs.bindle.R
 import com.klavs.bindle.resource.Resource
 import com.klavs.bindle.uix.view.auth.PasswordAgainTextField
 import com.klavs.bindle.uix.view.auth.PasswordTextField
 import com.klavs.bindle.uix.viewmodel.ProfileViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ResetPassword(
+    navController: NavHostController, currentUser: FirebaseUser,
+    viewModel: ProfileViewModel
+) {
+    val context = LocalContext.current
     val currentPassword = remember {
         mutableStateOf("")
     }
@@ -63,16 +70,16 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
     val currentPasswordIsWrong = remember {
         mutableStateOf(false)
     }
-    val error = remember {
-        mutableStateOf(false)
-    }
-    val errorMessage = remember {
-        mutableStateOf("")
-    }
     val emailSent = remember {
         mutableStateOf(false)
     }
-    Scaffold(topBar = {
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        topBar = {
         CenterAlignedTopAppBar(navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
@@ -80,7 +87,7 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     contentDescription = "turn back"
                 )
             }
-        }, title = { Text(text = "Reset Your Password") })
+        }, title = { Text(text = stringResource(R.string.reset_password)) })
     }) { innerPadding ->
         Box(
             modifier = Modifier
@@ -90,8 +97,7 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
             LaunchedEffect(key1 = viewModel.resetPasswordState.value) {
                 when (val resource = viewModel.resetPasswordState.value) {
                     is Resource.Error -> {
-                        error.value = true
-                        errorMessage.value = resource.message!!
+                        scope.launch { snackbarHostState.showSnackbar(resource.messageResource?.let { context.getString(it) }?:"") }
                     }
 
                     is Resource.Idle -> {}
@@ -99,50 +105,16 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     is Resource.Success -> {
                         if (resource.data!!) {
                             Toast.makeText(
-                                navController.context,
-                                "Password reset successfully",
+                                context,
+                                context.getString(R.string.password_changed_successfully),
                                 Toast.LENGTH_SHORT
                             ).show()
                             navController.popBackStack()
                         } else {
-                            currentPasswordIsWrong.value = true
+                            scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.wrong_password_please_check_it)) }
                         }
                     }
                 }
-            }
-            if (error.value) {
-                AlertDialog(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.WarningAmber,
-                            contentDescription = "error"
-                        )
-                    },
-                    title = { Text(text = "Error") },
-                    text = { Text(text = errorMessage.value) },
-                    onDismissRequest = { error.value = false },
-                    confirmButton = {
-                        Button(onClick = { error.value = false }) {
-                            Text(text = "Okay")
-                        }
-                    })
-            }
-            if (currentPasswordIsWrong.value) {
-                AlertDialog(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.WarningAmber,
-                            contentDescription = "error"
-                        )
-                    },
-                    title = { Text(text = "Wrong Password") },
-                    text = { Text(text = "Please check your current password and try again") },
-                    onDismissRequest = { currentPasswordIsWrong.value = false },
-                    confirmButton = {
-                        Button(onClick = { currentPasswordIsWrong.value = false }) {
-                            Text(text = "Okay")
-                        }
-                    })
             }
 
             if (forgotPasswordDialogIsEnable.value) {
@@ -153,29 +125,36 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                             contentDescription = "reset password"
                         )
                     },
-                    title = { Text(text = "Reset password") },
+                    title = { Text(text = stringResource(R.string.reset_password)) },
                     text = {
                         Column(
                             Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(text = "We will send a link to your e-mail address to reset your password")
+                            Text(text = stringResource(R.string.sending_changing_password_link_dialog_text))
                         }
 
                     },
                     onDismissRequest = { forgotPasswordDialogIsEnable.value = false },
                     confirmButton = {
 
-                        Button(enabled = if (emailSent.value) false else true, onClick = {
-                            viewModel.sendResetPasswordEmail()
-                            emailSent.value = true
+                        Button(enabled = !emailSent.value, onClick = {
+                            if (currentUser.email != null) {
+                                viewModel.sendResetPasswordEmail(
+                                    email = currentUser.email!!
+                                )
+                                emailSent.value = true
+                            }else{
+                                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.email_not_found)) }
+                            }
                         }) {
-                            Text(text = if (emailSent.value) "Link sent. Please check your e-mail" else "Send link to reset the password")
+                            Text(text = if (emailSent.value) stringResource(R.string.link_sent_check_email)
+                            else stringResource(R.string.send_link_to_reset_password))
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { forgotPasswordDialogIsEnable.value = false }) {
-                            Text(text = "Cancel")
+                            Text(text = stringResource(R.string.cancel))
                         }
                     })
             }
@@ -185,7 +164,7 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     isResettingPassword = true,
                     value = currentPassword.value,
                     onValueChange = { currentPassword.value = it },
-                    label = "Current Password"
+                    label = stringResource(R.string.current_password)
                 )
                 Spacer(modifier = Modifier.height(40.dp))
                 PasswordTextField(
@@ -194,13 +173,9 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     value = newPassword.value,
                     onValueChange = {
                         newPassword.value = it
-                        if (newPassword.value.length < 6) {
-                            passwordIsValid.value = false
-                        } else {
-                            passwordIsValid.value = true
-                        }
+                        passwordIsValid.value = newPassword.value.length >= 6
                     },
-                    label = "New Password"
+                    label = stringResource(R.string.new_password)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -210,11 +185,11 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     value = newPasswordAgain.value,
                     passwordsDifferent = newPassword.value != newPasswordAgain.value,
                     onValueChange = { newPasswordAgain.value = it },
-                    label = "New Password (Again)"
+                    label = stringResource(R.string.new_password_again)
                 )
                 Row(Modifier.fillMaxWidth(0.9f), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = { forgotPasswordDialogIsEnable.value = true }) {
-                        Text(text = "Forgot password?")
+                    TextButton(onClick = {forgotPasswordDialogIsEnable.value = true}) {
+                        Text(text = stringResource(R.string.forgot_password))
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -228,7 +203,7 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
                     }
                 })
                 {
-                    Text(text = "Change your password")
+                    Text(text = stringResource(R.string.change_password))
                 }
             }
         }
@@ -239,5 +214,5 @@ fun ResetPassword(navController: NavHostController, viewModel: ProfileViewModel 
 @Preview
 @Composable
 private fun ResetPasswordPreview() {
-    ResetPassword(navController = rememberNavController())
+    //ResetPassword(navController = rememberNavController())
 }

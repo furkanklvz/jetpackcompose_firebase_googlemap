@@ -1,24 +1,24 @@
 package com.klavs.bindle.data.entity
 
-import com.google.android.gms.maps.model.LatLng
-import java.time.LocalDate
-import java.time.LocalTime
+import com.google.firebase.Timestamp
 
 data class Event(
     val id: String = "",
     val title: String= "",
     val type: String= "",
     val description: String= "",
-    val owner: String= "",
-    val date: LocalDate,
-    val time: LocalTime,
-    val location: LatLng,
-    val address_description: String? = null,
-    val participants: List<String>? = null,
-    val participant_limit: Int?=null,
-    val announcements: List<Announcement>? = null,
-){
-    fun isExpired(): Boolean = date.isBefore(LocalDate.now())
-}
-
-
+    val ownerUid: String= "",
+    val date: Timestamp = Timestamp.now(),
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
+    val privateEvent: Boolean = false,
+    val addressDescription: String? = null,
+    val participantLimit: Int?=null,
+    val linkedCommunities: List<String> = emptyList(),
+    val privateInfo: Boolean = true,
+    val onlyByRequest: Boolean = true,
+    val participantsCount: Int? = null,
+    val notificationsSent: Boolean = false,
+    val amIParticipating: Boolean? = null,
+    val chatRestriction: Boolean = false,
+)

@@ -1,6 +1,7 @@
 package com.klavs.bindle.data.repo.firestore
 
 import android.net.Uri
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -8,10 +9,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.Source
 import com.klavs.bindle.data.datasource.firestore.FirestoreDataSource
-import com.klavs.bindle.data.entity.JoinedCommunities
-import com.klavs.bindle.data.entity.Member
-import com.klavs.bindle.data.entity.PagedData
+import com.klavs.bindle.data.entity.Event
 import com.klavs.bindle.data.entity.User
+import com.klavs.bindle.data.entity.community.Community
 import com.klavs.bindle.resource.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -33,8 +33,13 @@ class FirestoreRepositoryImpl @Inject constructor(val ds: FirestoreDataSource) :
     override suspend fun updateProfilePictureUri(newProfilePictureUri: Uri?): Resource<Boolean> =
         withContext(Dispatchers.IO) { ds.updateProfilePictureUri(newProfilePictureUri = newProfilePictureUri) }
 
+    override suspend fun getUserDataFlow(uid: String): Flow<Resource<User>> =
+         ds.getUserDataFlow(uid).flowOn(Dispatchers.IO)
+
     override suspend fun getUserData(uid: String): Resource<User> =
-        withContext(Dispatchers.IO) { ds.getUserData(uid) }
+        withContext(Dispatchers.IO){ds.getUserData(
+            uid = uid
+        )}
 
     override suspend fun updateUserData(
         uid: String,
@@ -52,7 +57,10 @@ class FirestoreRepositoryImpl @Inject constructor(val ds: FirestoreDataSource) :
     override suspend fun getDocument(
         docRef: DocumentReference,
         source: Source
-    ): Resource<DocumentSnapshot?> = withContext(Dispatchers.IO) { ds.getDocument(docRef, source) }
+    ): Resource<DocumentSnapshot> = withContext(Dispatchers.IO) { ds.getDocument(docRef, source) }
+
+    override suspend fun getCollection(query: Query, source: Source): Resource<QuerySnapshot> =
+        withContext(Dispatchers.IO) { ds.getCollection(query, source) }
 
     override suspend fun addItemToMapField(
         documentRef: DocumentReference,
@@ -77,20 +85,31 @@ class FirestoreRepositoryImpl @Inject constructor(val ds: FirestoreDataSource) :
         query: Query,
         pageSize: Long,
         lastDocument: DocumentSnapshot?
-    ): Resource<PagedData> = withContext(Dispatchers.IO){ds.getDocumentsWithPaging(query, pageSize, lastDocument)}
+    ): Resource<QuerySnapshot> = withContext(Dispatchers.IO){ds.getDocumentsWithPaging(query, pageSize, lastDocument)}
 
     override fun listenToNewDoc(
         query: Query
-    ): Flow<Resource<QuerySnapshot>> =
+    ): Flow<Resource<DocumentSnapshot?>> =
         ds.listenToNewDoc(query).flowOn(Dispatchers.IO)
 
     override suspend fun deleteDocument(documentRef: DocumentReference): Resource<String> =
         withContext(Dispatchers.IO){ds.deleteDocument(documentRef)}
 
     override suspend fun acceptJoiningRequestForCommunity(
-        member: Member,
-        community: JoinedCommunities
-    ): Resource<String> = withContext(Dispatchers.IO){ds.acceptJoiningRequestForCommunity(member = member, community = community)}
+        uid: String,
+        communityId: String
+    ): Resource<String> = withContext(Dispatchers.IO){ds.acceptJoiningRequestForCommunity(uid, communityId)}
+
+    override suspend fun acceptJoiningRequestForEvent(
+        uid: String,
+        eventId: String,
+        ownerUid: String
+    ): Resource<String> =
+        withContext(Dispatchers.IO){ds.acceptJoiningRequestForEvent(
+            uid = uid,
+            eventId = eventId,
+            ownerUid = ownerUid
+        )}
 
     override suspend fun removeMember(uid: String, communityId: String): Resource<String> =
         withContext(Dispatchers.IO){ds.removeMember(uid = uid, communityId = communityId)}
@@ -105,14 +124,51 @@ class FirestoreRepositoryImpl @Inject constructor(val ds: FirestoreDataSource) :
         documentRef: DocumentReference,
         fieldName: String,
         data: Any?
-    ): Resource<Any> =
+    ): Resource<Any?> =
         withContext(Dispatchers.IO){ds.updateField(documentRef, fieldName, data)}
 
     override suspend fun checkIfUserLikedPost(postRef: DocumentReference, uid: String): Boolean =
         withContext(Dispatchers.IO){ds.checkIfUserLikedPost(postRef, uid)}
 
-    override suspend fun countDocumentsWithoutResource(query: Query): Int =
+    override suspend fun countDocumentsWithoutResource(query: Query): Int? =
         withContext(Dispatchers.IO){ds.countDocumentsWithoutResource(query)}
+
+    override suspend fun createEvent(event: Event, newTickets: Long): Resource<Event> =
+        withContext(Dispatchers.IO){ds.createEvent(event, newTickets)}
+
+    override suspend fun getEvent(eventId: String): Resource<Event> =
+        withContext(Dispatchers.IO){ds.getEvent(eventId)}
+
+    override suspend fun getEvents(query: Query, listSize: Int?): Resource<List<Event>> =
+        withContext(Dispatchers.IO){ds.getEvents(query, listSize)}
+
+    override suspend fun refundTicket(uid: String, amount: Long): Resource<String> =
+        withContext(Dispatchers.IO){ds.refundTicket(
+            uid = uid,
+            amount = amount
+        )}
+
+    override suspend fun searchDocumentByFieldNameStartWith(
+        query: Query,
+        field: String,
+        startWith: String
+    ): Resource<QuerySnapshot> = withContext(Dispatchers.IO){ds.searchDocumentByFieldNameStartWith(
+        query = query,
+        field = field,
+        startWith = startWith
+    )}
+
+    override suspend fun getEventsNearMe(latLng: LatLng): Resource<List<Event>> =
+        withContext(Dispatchers.IO){ds.getEventsNearMe(
+            latLng = latLng
+        )}
+
+    override suspend fun getSuggestedCommunities(limit: Int, lastDoc: DocumentSnapshot?): Resource<Pair<List<Community>, DocumentSnapshot?>> =
+        withContext(Dispatchers.IO){ds.getSuggestedCommunities(
+            limit = limit,
+            lastDoc = lastDoc
+        )}
+
 
     override suspend fun addItemIntoListInDocument(
         documentRef: DocumentReference,
@@ -121,8 +177,8 @@ class FirestoreRepositoryImpl @Inject constructor(val ds: FirestoreDataSource) :
     ): Resource<Boolean> =
         withContext(Dispatchers.IO) { ds.addItemIntoListInDocument(documentRef, fieldName, data) }
 
-    override fun getCollectionWithListener(collectionRef: CollectionReference): Flow<Resource<QuerySnapshot>> =
-        ds.getCollectionWithListener(collectionRef).flowOn(Dispatchers.IO)
+    override fun getCollectionWithListener(query: Query): Flow<Resource<QuerySnapshot>> =
+        ds.getCollectionWithListener(query).flowOn(Dispatchers.IO)
 
     override fun getDocumentWithListener(docRef: DocumentReference): Flow<Resource<DocumentSnapshot?>> =
         ds.getDocumentWithListener(docRef = docRef).flowOn(Dispatchers.IO)

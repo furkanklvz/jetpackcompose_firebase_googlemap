@@ -14,6 +14,6 @@ val Green1 = Color(0xFF41B441)
 val Green2 = Color(0xFFAAF8C4)
 val Orange1 = Color(0xFFFC7C54)
 val Orange2 = Color(0xFFE1BC4C)
-val LightRed = Color(0xFFFF8986)
+val LightRed = Color(0xFFFF726F)
 
 val LoadingBackground = Color(0x41000000)

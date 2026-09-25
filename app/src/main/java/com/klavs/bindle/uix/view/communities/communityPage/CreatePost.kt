@@ -1,7 +1,9 @@
 package com.klavs.bindle.uix.view.communities.communityPage
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,14 +35,19 @@ import androidx.compose.material.icons.rounded.AddAPhoto
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CommentsDisabled
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -47,40 +55,50 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseUser
+import com.klavs.bindle.R
 import com.klavs.bindle.data.entity.Post
 import com.klavs.bindle.resource.Resource
-import com.klavs.bindle.ui.theme.Green1
-import com.klavs.bindle.uix.viewmodel.communities.CreatePostViewModel
+import com.klavs.bindle.uix.viewmodel.communities.CommunityPageViewModel
+import com.klavs.bindle.uix.viewmodel.communities.PostViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 @Composable
-fun CreatePost(communityId: String, navController: NavHostController) {
-    val viewModel: CreatePostViewModel = hiltViewModel()
-    val currentUser by viewModel.currentUser.collectAsState()
-    DisposableEffect(true) {
-        onDispose {
-            viewModel.currentUserJob?.cancel()
-        }
-    }
+fun CreatePost(
+    communityId: String,
+    currentUser: FirebaseUser,
+    navController: NavHostController,
+    viewModel: CommunityPageViewModel
+) {
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionState =
             rememberPermissionState(permission = android.Manifest.permission.READ_MEDIA_IMAGES)
@@ -97,7 +115,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
         )
     }
 
-    var selectedImageUri by rememberSaveable {
+    var selectedImageUri by remember {
         mutableStateOf<Uri?>(null)
     }
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -129,11 +147,8 @@ fun CreatePost(communityId: String, navController: NavHostController) {
         when (val resource = viewModel.createPostResource.value) {
             is Resource.Error -> {
                 isLoading = false
-                Toast.makeText(navController.context, resource.message!!, Toast.LENGTH_LONG).show()
-                navController.navigate("community_page/${communityId}"){
-                    popUpTo(0){
-                        inclusive = true
-                    }
+                scope.launch {
+                    snackbarHostState.showSnackbar(resource.messageResource?.let { context.getString(it) }?:"")
                 }
             }
 
@@ -147,12 +162,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
 
             is Resource.Success -> {
                 isLoading = false
-                Toast.makeText(navController.context, "Post shared successfully", Toast.LENGTH_SHORT).show()
-                navController.navigate("community_page/${communityId}"){
-                    popUpTo(0){
-                        inclusive = true
-                    }
-                }
+                navController.popBackStack()
             }
         }
     }
@@ -164,19 +174,17 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                 .background(Color.Black.copy(alpha = 0.5f))
                 .zIndex(2f)
         ) {
-            CircularProgressIndicator(Modifier.align(Alignment.Center))
+            CircularWavyProgressIndicator(Modifier.align(Alignment.Center))
         }
     }
 
-    Scaffold(topBar = {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
         TopAppBar(
             navigationIcon = {
                 IconButton(
-                    onClick = { navController.navigate("community_page/${communityId}"){
-                        popUpTo(0){
-                            inclusive = true
-                        }
-                    }}
+                    onClick = { navController.popBackStack() }
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -184,7 +192,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                     )
                 }
             },
-            title = { Text("Create Post", style = MaterialTheme.typography.titleSmall) }
+            title = { Text(stringResource(R.string.create_post), style = MaterialTheme.typography.titleSmall) }
         )
     }) { innerPadding ->
         Box(
@@ -200,7 +208,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.size(40.dp)) {
-                        if (currentUser?.photoUrl == null) {
+                        if (currentUser.photoUrl == null) {
                             Image(
                                 imageVector = Icons.Rounded.Person,
                                 contentDescription = "",
@@ -212,12 +220,29 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                             )
                         } else {
                             GlideImage(
-                                imageModel = { currentUser!!.photoUrl },
+                                imageModel = { currentUser.photoUrl },
                                 modifier = Modifier
                                     .matchParentSize()
                                     .clip(CircleShape),
+                                requestBuilder = {
+                                    val thumbnailRequest = Glide
+                                        .with(context)
+                                        .asBitmap()
+                                        .load(currentUser.photoUrl)
+                                        .apply(RequestOptions().override(100))
+
+                                    Glide
+                                        .with(context)
+                                        .asBitmap()
+                                        .apply(
+                                            RequestOptions()
+                                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        )
+                                        .thumbnail(thumbnailRequest)
+                                        .transition(withCrossFade())
+                                },
                                 loading = {
-                                    CircularProgressIndicator(
+                                    CircularWavyProgressIndicator(
                                         modifier = Modifier
                                             .fillMaxSize(0.5f)
                                             .align(Alignment.Center)
@@ -228,7 +253,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                     }
                     Spacer(Modifier.width(10.dp))
                     Text(
-                        currentUser?.displayName ?: "",
+                        currentUser.displayName ?: "",
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
@@ -253,12 +278,12 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                     minLines = 8,
                     supportingText = {
                         Text(
-                            if (postTextIsEmpty) "Please write something or add a picture"
+                            if (postTextIsEmpty) stringResource(R.string.empty_post_warning_message)
                             else "${postText.length}/${characterLimit}"
                         )
                     },
                     placeholder = {
-                        Text("What's on your mind?")
+                        Text(stringResource(R.string.what_is_on_your_mind))
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -268,7 +293,25 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                             if (mediaIsGranted) {
                                 galleryLauncher.launch("image/*")
                             } else {
-                                permissionState.launchPermissionRequest()
+                                if (!permissionState.status.shouldShowRationale) {
+
+                                    scope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = context.getString(R.string.media_permission_rationale),
+                                            withDismissAction = true,
+                                            duration = SnackbarDuration.Long,
+                                            actionLabel = context.getString(R.string.permission_settings)
+                                        )
+                                        if (SnackbarResult.ActionPerformed == result){
+                                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                data = Uri.fromParts("package", context.packageName, null)
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                    }
+                                }else {
+                                    permissionState.launchPermissionRequest()
+                                }
                             }
                         }
                     ) {
@@ -288,6 +331,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.90f)
+                            .heightIn(max = 300.dp)
                             .align(Alignment.CenterHorizontally)
                     ) {
                         Image(
@@ -307,7 +351,7 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                     Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Comments On", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.comments_on), style = MaterialTheme.typography.titleMedium)
                     Switch(
                         checked = commentsOn,
                         onCheckedChange = {
@@ -333,32 +377,28 @@ fun CreatePost(communityId: String, navController: NavHostController) {
                 Spacer(Modifier.height(15.dp))
                 FloatingActionButton(
                     onClick = {
-                        if (currentUser != null) {
-                            if (postText.isNotEmpty() || selectedImageUri != null) {
-                                val postModel = Post(
-                                    senderUid = currentUser!!.uid,
-                                    content = postText,
-                                    date = Timestamp.now().toDate().time,
-                                    imageUrl = selectedImageUri?.toString(),
-                                    commentsOn = commentsOn
-                                )
-                                viewModel.createPost(post = postModel, communityId = communityId)
-                            } else {
-                                postTextIsEmpty = true
-                            }
+                        if (postText.isNotBlank() || selectedImageUri != null) {
+                            val postModel = Post(
+                                uid = currentUser.uid,
+                                content = postText,
+                                date = Timestamp.now(),
+                                imageUrl = selectedImageUri?.toString(),
+                                commentsOn = commentsOn
+                            )
+                            viewModel.createPost(
+                                post = postModel,
+                                communityId = communityId,
+                                currentUser = currentUser
+                            )
                         } else {
-                            Toast.makeText(
-                                navController.context,
-                                "It seems you are signed out, please sign in again",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            postTextIsEmpty = true
                         }
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "Post", modifier = Modifier.padding(horizontal = 5.dp),
+                            stringResource(R.string.post_confirm), modifier = Modifier.padding(horizontal = 5.dp),
                             style = MaterialTheme.typography.titleMedium
                         )
                         Icon(
@@ -379,5 +419,5 @@ fun CreatePost(communityId: String, navController: NavHostController) {
 @Composable
 @Preview
 private fun CreatePostPreview() {
-    CreatePost(communityId = "", rememberNavController())
+    //CreatePost(communityId = "", rememberNavController())
 }

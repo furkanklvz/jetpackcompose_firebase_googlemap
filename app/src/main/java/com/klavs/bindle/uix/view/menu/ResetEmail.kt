@@ -1,6 +1,5 @@
 package com.klavs.bindle.uix.view.menu
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,16 +11,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -29,42 +31,48 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.klavs.bindle.R
 import com.klavs.bindle.resource.Resource
-import com.klavs.bindle.uix.view.loading.LoadingAnimation
 import com.klavs.bindle.uix.viewmodel.ProfileViewModel
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ResetEmail(navController: NavHostController, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ResetEmail(
+    navController: NavHostController,
+    myUid: String?,
+    viewModel: ProfileViewModel
+) {
+    val context = LocalContext.current
+
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val isLoading = remember { mutableStateOf(false) }
-    val isError = remember { mutableStateOf(false) }
-    val isSuccessful = remember { mutableStateOf(false) }
-    val errorMessage = remember { mutableStateOf("") }
     val passwordIsEmpty = remember { mutableStateOf(false) }
     val emailIsEmpty = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(key1 = viewModel.updateEmailState.value) {
         when (val resource = viewModel.updateEmailState.value) {
             is Resource.Error -> {
                 isLoading.value = false
-                isError.value = true
-                errorMessage.value = resource.message!!
+                snackbarHostState.showSnackbar(resource.messageResource?.let { context.getString(it) }
+                    ?: "")
             }
 
             is Resource.Idle -> {}
@@ -74,59 +82,40 @@ fun ResetEmail(navController: NavHostController, viewModel: ProfileViewModel = h
 
             is Resource.Success -> {
                 isLoading.value = false
-                isSuccessful.value = true
+                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.we_sent_a_verification_link)) }
             }
         }
     }
 
-    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text(text = "Reset E-Mail Address") }) }) { innerPadding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            CenterAlignedTopAppBar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = {navController.popBackStack()}
+                    ) {
+                        Icon(imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "turn back")
+                    }
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.change_email_address)
+                    )
+                })
+        }) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
         ) {
-            if (isSuccessful.value){
-                AlertDialog(
-                    properties = DialogProperties(
-                        dismissOnClickOutside = true,
-                        dismissOnBackPress = true
-                    ),
-                    title = { Text(text = "Success") },
-                    text = { Text(text = "We send a verification link to your new e-mail address. You change your e-mail address after verification.") },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = "success"
-                        )
-                    }, onDismissRequest = { navController.popBackStack() },
-                    confirmButton = {
-                        Button(onClick = { navController.popBackStack() }) {
-                            Text(text = "Ok")
-                        }
-                    })
-            }
-            if (isError.value) {
-                AlertDialog(
-                    title = { Text(text = "Error") },
-                    text = { Text(text = errorMessage.value) },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.ErrorOutline,
-                            contentDescription = "error"
-                        )
-                    }, onDismissRequest = { isError.value = false },
-                    confirmButton = {
-                        Button(onClick = { isError.value = false }) {
-                            Text(text = "Ok")
-                        }
-                    })
-            }
             if (isLoading.value) {
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .clickable(false) {}) {
                     Box(modifier = Modifier.align(Alignment.Center)) {
-                        LoadingAnimation()
+                        CircularWavyProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 }
             }
@@ -142,7 +131,7 @@ fun ResetEmail(navController: NavHostController, viewModel: ProfileViewModel = h
                     value = password.value
                 ) {
                     password.value = it
-                    if (password.value.isEmpty()) {
+                    if (password.value.isBlank()) {
                         passwordIsEmpty.value = true
                     } else {
                         passwordIsEmpty.value = false
@@ -154,22 +143,18 @@ fun ResetEmail(navController: NavHostController, viewModel: ProfileViewModel = h
                     value = email.value
                 ) {
                     email.value = it
-                    if (email.value.isEmpty()) {
-                        emailIsEmpty.value = true
-                    } else {
-                        emailIsEmpty.value = false
-                    }
+                    emailIsEmpty.value = email.value.isEmpty()
                 }
                 Spacer(modifier = Modifier.height(30.dp))
                 Button(
                     onClick = {
                         if (!passwordIsEmpty.value && !emailIsEmpty.value) {
-                            viewModel.updateEmail(password.value,email.value)
+                            viewModel.updateEmail(password.value, email.value)
                         }
                     },
                     modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = stringResource(R.string.confirm))
                 }
             }
         }
@@ -207,13 +192,13 @@ private fun PasswordTextField(
                 contentDescription = "visibility",
                 modifier = Modifier.clickable { isVisible.value = !isVisible.value })
         },
-        supportingText = if (isEmpty){
-            { Text(text = "Password cannot be empty") }
-        }else null,
+        supportingText = if (isEmpty) {
+            { Text(text = stringResource(R.string.password_cannot_be_empty)) }
+        } else null,
         singleLine = true,
         value = value,
         onValueChange = { onValueChange(it) },
-        label = { Text(text = "Password") },
+        label = { Text(text = stringResource(R.string.password)) },
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
@@ -232,14 +217,14 @@ private fun EmailTextField(
     val screenWith = LocalConfiguration.current.screenWidthDp.dp
     TextField(
         isError = isEmpty,
-        supportingText = if (isEmpty){
-            { Text(text = "E-Mail address cannot be empty") }
-        }else null,
+        supportingText = if (isEmpty) {
+            { Text(text = stringResource(R.string.email_cannot_be_empty)) }
+        } else null,
         modifier = Modifier.width(screenWith / 1.2f),
         singleLine = true,
         value = value,
         onValueChange = { onValueChange(it) },
-        label = { Text(text = "New E-Mail Address") },
+        label = { Text(text = stringResource(R.string.new_email_address)) },
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
@@ -252,5 +237,5 @@ private fun EmailTextField(
 @Preview
 @Composable
 private fun ResetEmailPreview() {
-    ResetEmail(navController = rememberNavController())
+    //ResetEmail(navController = rememberNavController())
 }

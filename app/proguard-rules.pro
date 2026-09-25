@@ -15,7 +15,11 @@
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
-
+-dontwarn org.slf4j.impl.StaticLoggerBinder
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-if class androidx.credentials.CredentialManager
+-keep class androidx.credentials.playservices.**{
+*;
+}

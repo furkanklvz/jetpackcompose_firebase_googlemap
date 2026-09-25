@@ -12,12 +12,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +20,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import com.klavs.bindle.data.datastore.AppPref
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 private val DarkColorScheme = darkColorScheme(
@@ -53,7 +50,7 @@ private val LightColorScheme = lightColorScheme(
 class ThemeViewModel @Inject constructor(private val appPref: AppPref) : ViewModel() {
 
     val selectedTheme = appPref.getSelectedTheme()
-
+    val initialTheme = runBlocking { appPref.getSelectedTheme().first() }
 }
 
 @SuppressLint("RestrictedApi")
@@ -66,58 +63,54 @@ fun BindleTheme(
     viewModel: ThemeViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
-    val theme = viewModel.selectedTheme.collectAsState(initial = AppPref.DEFAULT_THEME)
+    val initialTheme = viewModel.initialTheme
+    var theme by remember { mutableStateOf(initialTheme) }
     val context = LocalContext.current
-    val isDarkTheme = remember {
-        mutableStateOf(false)
-    }
-    LaunchedEffect(key1 = theme.value) {
-        when (theme.value) {
-            "dark" -> {
-                isDarkTheme.value = true
-                (context as ComponentActivity).enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.dark(
-                        Color.Transparent.toArgb()
+    LaunchedEffect(viewModel.selectedTheme) {
+        viewModel.selectedTheme.collect { newTheme ->
+            theme = newTheme
+            when (newTheme) {
+                "dark" -> {
+                    (context as? ComponentActivity)?.enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.dark(
+                            Color.Transparent.toArgb()
+                        )
                     )
-                )
-            }
-
-            "light" -> {
-                isDarkTheme.value = false
-                (context as ComponentActivity).enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.light(
-                        Color.Transparent.toArgb(),
-                        Color.Transparent.toArgb()
+                }
+                "light" -> {
+                    (context as? ComponentActivity)?.enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.light(
+                            Color.Transparent.toArgb(),
+                            Color.Transparent.toArgb()
+                        )
                     )
-                )
-            }
-
-            "dynamic" -> {
-                isDarkTheme.value = darkTheme
-                (context as ComponentActivity).enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.auto(
-                        Color.Transparent.toArgb(),
-                        Color.Transparent.toArgb()
+                }
+                "dynamic" -> {
+                    (context as? ComponentActivity)?.enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            Color.Transparent.toArgb(),
+                            Color.Transparent.toArgb()
+                        )
                     )
-                )
+                }
             }
         }
+    }
+
+    val isDarkTheme = when (theme) {
+        "dark" -> true
+        "light" -> false
+        "dynamic" -> darkTheme
+        else -> darkTheme
     }
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (isDarkTheme.value) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
-                context
-            )
+            if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
+        isDarkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
-
-
-
-
 
     MaterialTheme(
         colorScheme = colorScheme,

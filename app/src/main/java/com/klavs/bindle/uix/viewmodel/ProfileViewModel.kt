@@ -7,19 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.klavs.bindle.data.entity.User
+import com.google.firebase.firestore.FirebaseFirestore
+import com.klavs.bindle.R
 import com.klavs.bindle.data.repo.auth.AuthRepository
 import com.klavs.bindle.data.repo.firestore.FirestoreRepository
 import com.klavs.bindle.data.repo.storage.StorageRepository
 import com.klavs.bindle.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,10 +25,10 @@ class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepository,
     private val firestoreRepo: FirestoreRepository,
     private val storageRepo: StorageRepository,
+    private val db: FirebaseFirestore,
     auth: FirebaseAuth
 ) : ViewModel() {
 
-    val userDataState: MutableState<Resource<User>> = mutableStateOf(Resource.Idle())
     val resetPasswordState: MutableState<Resource<Boolean>> = mutableStateOf(Resource.Idle())
     val uploadPictureState: MutableState<Resource<Boolean>> = mutableStateOf(Resource.Idle())
     val updateUserDataState: MutableState<Resource<Boolean>> = mutableStateOf(Resource.Idle())
@@ -39,23 +37,21 @@ class ProfileViewModel @Inject constructor(
         mutableStateOf(Resource.Idle())
     val checkUniqueUsernameState: MutableState<Resource<Boolean>> = mutableStateOf(Resource.Idle())
 
-    private val _currentUser = MutableStateFlow(auth.currentUser)
-    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+    private val _deletingAccountResource = MutableStateFlow<Resource<Unit>>(Resource.Idle())
+    val deletingAccountResource = _deletingAccountResource.asStateFlow()
 
-    var currentUserJob: Job? = null
+    private val _currentUser = MutableStateFlow(auth.currentUser)
+    val currentUser = _currentUser.asStateFlow()
 
     init {
-        currentUserJob = viewModelScope.launch(Dispatchers.Main) {
-            authRepo.getCurrentUser().collect {
-                _currentUser.value = it
-            }
-        }
-        if (currentUser.value!= null){
-            viewModelScope.launch {
-                currentUser.value!!.reload().await()
+        viewModelScope.launch(Dispatchers.Main) {
+            authRepo.getCurrentUser().collect { user ->
+                _currentUser.value = user
             }
         }
     }
+
+
 
     fun sendEmailVerification() {
         sendEmailVerificationState.value = Resource.Loading()
@@ -67,32 +63,32 @@ class ProfileViewModel @Inject constructor(
     fun updateEmail(password: String, newEmail: String) {
         updateEmailState.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.Main) {
-            if (currentUser.value != null) {
-                updateEmailState.value =
-                    authRepo.updateEmail(password = password, newEmail = newEmail)
-            } else {
-                updateEmailState.value = Resource.Error(message = "User not found")
-            }
+            updateEmailState.value =
+                authRepo.updateEmail(password = password, newEmail = newEmail)
         }
     }
 
-    fun updateUserData(newUserData: HashMap<String, Any?>) {
-        updateUserDataState.value = Resource.Loading()
-        if (currentUser.value != null) {
-            if (newUserData.isNotEmpty()) {
-                viewModelScope.launch(Dispatchers.Main) {
-                    updateUserDataState.value =
-                        firestoreRepo.updateUserData(
-                            uid = currentUser.value!!.uid,
-                            newUser = newUserData
-                        )
+    fun deleteAccount(user: FirebaseUser, password: String){
+        _deletingAccountResource.value = Resource.Loading()
+        viewModelScope.launch {
+            _deletingAccountResource.value = authRepo.deleteAccount(user = user, password = password)
+        }
+    }
 
-                }
-            } else {
-                updateUserDataState.value = Resource.Success(data = true)
+
+    fun updateUserData(newUserData: HashMap<String, Any?>, myUid: String) {
+        updateUserDataState.value = Resource.Loading()
+        if (newUserData.isNotEmpty()) {
+            viewModelScope.launch(Dispatchers.Main) {
+                updateUserDataState.value =
+                    firestoreRepo.updateUserData(
+                        uid = myUid,
+                        newUser = newUserData
+                    )
+
             }
         } else {
-            updateUserDataState.value = Resource.Error(message = "User not found")
+            updateUserDataState.value = Resource.Success(data = true)
         }
     }
 
@@ -106,33 +102,19 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun sendResetPasswordEmail() {
-        if (currentUser.value != null) {
-            viewModelScope.launch(Dispatchers.Main) {
-                authRepo.sendPasswordResetEmail(email = currentUser.value!!.email!!)
-            }
-
-        }
-    }
-
-    fun getUserInfos() {
-        userDataState.value = Resource.Loading()
+    fun sendResetPasswordEmail(email: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            if (currentUser.value != null) {
-                userDataState.value = firestoreRepo.getUserData(currentUser.value!!.uid)
-            } else {
-                userDataState.value = Resource.Error(message = "User not found")
-            }
+            authRepo.sendPasswordResetEmail(email = email)
         }
     }
 
-    fun updateProfilePicture(pictureUri: Uri?) {
+    fun updateProfilePicture(pictureUri: Uri?, myUid: String) {
         uploadPictureState.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.Main) {
             if (pictureUri != null) {
                 val uploadToStorageState = storageRepo.uploadImage(
                     imageUri = pictureUri,
-                    "profilePictures/${currentUser.value!!.uid}",
+                    "profilePictures/$myUid",
                     maxSize = 384
                 )
                 if (uploadToStorageState is Resource.Success) {
@@ -142,14 +124,14 @@ class ProfileViewModel @Inject constructor(
                             firestoreRepo.updateProfilePictureUri(newProfilePictureUri = uploadToStorageState.data)
                     }
                 } else {
-                    uploadPictureState.value = Resource.Error(message = "Network error")
+                    uploadPictureState.value = Resource.Error(messageResource = R.string.something_went_wrong)
                 }
             } else {
                 uploadPictureState.value = authRepo.updateUserPhotoUrl(null)
                 if (uploadPictureState.value is Resource.Success) {
                     uploadPictureState.value =
                         firestoreRepo.updateProfilePictureUri(newProfilePictureUri = null)
-                    storageRepo.deleteImage("profilePictures/${currentUser.value!!.uid}")
+                    storageRepo.deleteImage("profilePictures/$myUid")
                 }
             }
         }

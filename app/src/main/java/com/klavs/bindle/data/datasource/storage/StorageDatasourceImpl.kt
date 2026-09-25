@@ -7,6 +7,7 @@ import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
+import com.klavs.bindle.R
 import com.klavs.bindle.resource.Resource
 import kotlinx.coroutines.tasks.await
 import java.io.ByteArrayOutputStream
@@ -25,7 +26,7 @@ class StorageDatasourceImpl @Inject constructor(
             Resource.Success(data = downloadUrl)
 
         } catch (e: Exception) {
-            Resource.Error(message = e.localizedMessage ?: "unknown error")
+            Resource.Error(messageResource = R.string.something_went_wrong)
         }
     }
 
@@ -35,7 +36,7 @@ class StorageDatasourceImpl @Inject constructor(
             ref.delete().await()
             Resource.Success(true)
         } catch (e: Exception) {
-            Resource.Error(message = e.localizedMessage ?: "unknown error")
+            Resource.Error(messageResource = R.string.something_went_wrong)
         }
     }
 
@@ -59,7 +60,7 @@ class StorageDatasourceImpl @Inject constructor(
 
         val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, true)
 
-        val exif = ExifInterface(context.contentResolver.openInputStream(imageUri)!!)
+        val exif = ExifInterface(context.contentResolver.openInputStream(imageUri)?: return ByteArray(0))
         val orientation =
             exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
 

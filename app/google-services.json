@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "206307366068",
+    "project_id": "map-with-compose-d3923",
+    "storage_bucket": "map-with-compose-d3923.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206307366068:android:958ad88acf7472f78473e1",
+        "android_client_info": {
+          "package_name": "com.klavs.bindle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "206307366068-1d4ss46j1qsrdmq0tpoqnhif8e8gdom5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.klavs.bindle",
+            "certificate_hash": "ebbb8b7cd2bb4a1c141cd495a12ce408e0067573"
+          }
+        },
+        {
+          "client_id": "206307366068-5f9fvmpanti579dmcmeis12olchj5ir8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.klavs.bindle",
+            "certificate_hash": "ee778ec50f18af2abda1fb7bdcb85cf314fda258"
+          }
+        },
+        {
+          "client_id": "206307366068-m05n3sjisf84eu81ukspvc5scoqaijb3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.klavs.bindle",
+            "certificate_hash": "f202e124511b113389467296db916ec20be56a4b"
+          }
+        },
+        {
+          "client_id": "206307366068-c1upmetl9aftbtpfv4gekn0kskrd13ah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Et7wJSakAPnD96lusOY_LDW3pVdNtzE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "206307366068-c1upmetl9aftbtpfv4gekn0kskrd13ah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

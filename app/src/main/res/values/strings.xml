@@ -1,3 +1,504 @@
 <resources>
     <string name="app_name">Bindle</string>
+    <string name="default_web_client_id">206307366068-c1upmetl9aftbtpfv4gekn0kskrd13ah.apps.googleusercontent.com</string>
+    <string name="algolia_application_id">7N9AAEUVBL</string>
+    <string name="algolia_search_only_api_key">1878e6378e258081864b74ba93ba76be</string>
+    <string name="algolia_index_events">bindle</string>
+    <string name="google_ads_application_id">ca-app-pub-7301531305273083~1804662604</string>
+    <string name="rewarded_ad_test_id">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="privacy_policy">Privacy Policy\n\n
+Bindle (hereinafter referred to as \"Application\", \"We\", \"Us\", \"Our\") collects, uses, and protects users\' personal information. This Privacy Policy explains how our users\' personal data is collected, used, shared, and protected.\n\n
+1. Information Collected\n\n
+Bindle collects users\' personal information only for the following purposes:\n\n
+- Mandatory Information:\n
+- Advertising ID: For users who interact with ads within the application, the Advertising ID provided by their device may be used for targeted advertising and performance analysis.\n
+- Username: Users choose a unique username within the app.\n
+- Email Address: Users\' email addresses associated with their accounts within the app.\n\n
+- Optional Information:\n
+- Profile Photo: Users can choose to upload a profile photo.\n
+- Real Name, Phone Number and Gender: This information is not currently collected for any purpose. However, if it is decided to use this information to improve the user experience in the future, necessary updates will be made to our Privacy Policy.\n
+- Location Information: Users can grant location permission to see events near them. Location information can only be viewed by the user themselves.\n\n
+2. Use of Information\n\n
+The information collected may be used for the following purposes:\n
+- Displaying targeted ads: Advertising ID is used to provide personalized and non-personalized ads through third party advertising networks such as AdMob.\n
+- Creating and managing user accounts\n
+- Creating and participating in events\n
+- Showing events near users\' locations\n
+- Enabling social interactions within the app (communities, event chats, etc.)\n
+- Processing in-app purchases (for consumables only)\n\n
+3. Sharing of Information\n\n
+Bindle does not share user information with third parties, but it may be shared in the following cases:\n
+- Third Party Service Providers: Third party service providers are used for AdMob ads and Play Store purchases. These services may use user information only to perform necessary transactions.\n
+- Legal Requirements: Information may be shared in response to legal or government requests.\n\n
+4. Data Security\n\n
+Bindle employs industry best practices to ensure the security of user data. However, we cannot guarantee that data transmission over the Internet is completely secure.\n\n
+5. User Rights\n\n
+Users have the following rights:\n
+- Access their personal data\n
+- Request updates to their personal data\n
+- Request deletion of their account\n
+- Ask any questions regarding the privacy policy\n\n
+6. Third Party Links\n\n
+The App may contain links to third party services such as AdMob and features such as the Play Store\'s purchasing system. The privacy policies of these third parties are independent of Bindle\'s policies, and we are not responsible for them.\n
+The app uses third party services, including AdMob, to serve advertisements. These services may use the device\'s Advertising ID to provide targeted advertising. Users can manage their Advertising ID preferences from their device settings.\n\n
+7. Policy Changes\n\n
+This Privacy Policy may be updated from time to time. When changes are made, the updated policy will be posted in the App. Users should check this page regularly to be aware of any changes to our privacy policy.\n\n
+8. Contact\n\n
+If you have any questions or concerns about this Privacy Policy, you may contact us at the following address:\n\n
+E-mail: bindledestek@gmail.com\n</string>
+    <string name="terms_of_service">Introduction\n\n
+These Terms of Service (\"Terms\") apply to your use of the Bindle application (\"Application\"). By using the Application, you agree to these Terms. If you do not agree to these Terms, please do not use the Application.\n\n
+Age Limit and User Obligations\n\n
+1. The Application is available to users who are 13 years of age or older. Users under the age of 13 are prohibited from using the App.\n
+2. When using the App, you are expected to not use it for illegal purposes, not to violate the rights of others, and to comply with all legal regulations.\n
+3. The App encourages users to refrain from harassing or harming other users.\n\n
+Prevention of Child Sexual Abuse and Exploitation (CSAE)\n\n
+1.The Application is committed to protecting children from sexual abuse, exploitation, and inappropriate content.\n
+2.Content Reporting and Moderation: Users can report inappropriate content, including potential CSAE-related content, using the in-app "Report Post", "Report User" and "Feedback and Support" feature. These reports are reviewed promptly by our moderation team.\n
+3.Prohibited Content: Any content involving child exploitation or abuse is strictly prohibited and will result in immediate removal and permanent account suspension.\n
+4.Collaboration with Authorities: Bindle collaborates with organizations such as the National Center for Missing and Exploited Children (NCMEC) and relevant law enforcement agencies.\n
+5.For more information about CSAE standards, please refer to the following resources:\n
+*National Center for Missing and Exploited Children (NCMEC): https://www.missingkids.org/\n
+*Internet Watch Foundation (IWF): https://www.iwf.org.uk/\n
+*UNICEF Child Protection Principles: https://www.unicef.org/protection\n\n
+Restrictions of Service and Disclaimers\n\n
+1. No guarantee is given that the App will operate uninterruptedly or error-free.\n
+2. We accept no liability for any data loss or damage that may occur as a result of the use of the App.\n
+3. Your account may be suspended or terminated if you violate these Terms.\n\n
+Data Use and Privacy\n\n
+1. The App only collects username, email address, profile photo (optional), and location data.\n
+2. Location data is only visible to the user and will be used for event recommendations.\n
+3. User name and profile photo may be shared with other users within events and communities.\n
+4. User data is only available to the user within the App will be used to improve your experience.\n\n
+Third Party Links and Ads\n\n
+1. The App uses a third-party advertising provider, AdMob. This means that user data may be collected through ads and other content.\n
+2. AdMob and other third-party services may collect and use user data. You are encouraged to review the privacy policies of these services.\n\n
+Account Deletion and App Termination\n\n
+1. Users can delete their accounts and data\'s from within the App.\n
+2. Users will be notified if the App is updated or terminated at any time. There is no guarantee that the App services will be uninterrupted.\n\n
+Purchase-Related Warnings and Obligations\n\n
+If you purchase in-app tickets and your payment is approved, it is strongly advised that you remain logged into the same account until your reward is delivered. Avoid logging out or switching accounts during this process.\n
+If your payment status is \"approved\" but the reward takes time to reflect in the Application, and you switch to another account in the meantime, the new account may incorrectly receive the reward due to system checks. To prevent such issues, do not switch accounts until the process is complete.\n
+In case you do not receive your reward after purchase, you can contact us via the \"Feedback and Support\" option in the Application menu or email us at bindledestek@gmail.com for assistance.\n
+Failure to follow these guidelines and switching accounts prematurely will not be our responsibility, and we accept no liability for such occurrences.\n\n
+Account Verification and Ownership\n\n
+If you do not verify your account through email or Google, the actual owner of the email address may later reclaim the account by using \"Sign in with Google\" or the \"Forgot Password\" option. Therefore, it is strongly recommended to verify that the account belongs to you before making any purchases.\n
+We cannot transfer accounts or purchases to another user if ownership disputes arise due to a lack of account verification. Users are solely responsible for ensuring their account is secured and verified before making purchases.\n
+    </string>
+    <string name="rewarded_ad_id">ca-app-pub-7301531305273083/9207114674</string>
+    <string name="open_ad_test_id">ca-app-pub-3940256099942544/9257395921</string>
+    <string name="open_ad_id">ca-app-pub-7301531305273083/9900129684</string>
+    <string name="event_message_notification_channel_id">event_message_notification_id</string>
+    <string name="event_message_notification_channel_name">You Have a New Message</string>
+    <string name="maps_api_key">AIzaSyD8eX8ddqtyv2Mt-3XDXfx-q1oXzPIe1nY</string>
+    <string name="new_message_notification_title">New message from %1$s</string>
+    <string name="event_request_notification_channel_name">Request to Participate Event</string>
+    <string name="community_participation_notification_channel_name">Community Participation</string>
+    <string name="community_request_notification_channel_name">Community Request to Participate</string>
+    <string name="post_liked_notification_channel_name">Post has Liked</string>
+    <string name="post_comment_notification_channel_name">New Comments For Your Post</string>
+    <string name="ten_tickets">ten_tickets</string>
+    <string name="twenty_tickets">twenty_tickets</string>
+    <string name="thirty_tickets">thirty_tickets</string>
+    <string name="greeting_page_community_text">Join communities, publish posts or updates, and organize events related to your community.</string>
+    <string name="greeting_page_event_text">Customize your event and organize participants.</string>
+    <string name="greeting_page_discover_text">Discover events near you on the map and create your own events with %s.</string>
+    <string name="discover">Discover</string>
+    <string name="events">Events</string>
+    <string name="communities">Communities</string>
+    <string name="greeting_page_account_text">To fully use Bindle, your account must be verified. You can visit the profile tab at any time to personalize your profile and verify your account.</string>
+    <string name="your_account">Your Account</string>
+    <string name="algolia_index_communities">bindle_communities</string>
+    <string name="community_search_idle_text">Explore Communities</string>
+    <string name="community_search_empty_text">No communities found</string>
+    <string name="event_search_idle_text">Explore events</string>
+    <string name="unverified_account_alert_dialog_text">You don\'t have a verified account yet, please verify your account or sign in with Google.</string>
+    <string name="unverified_account_alert_dialog_title">Verify Your Account</string>
+    <string name="verify_now">Verify Now</string>
+    <string name="later">Later</string>
+    <string name="please_sign_in_to_create_event">Please Sign in to Create Event</string>
+    <string name="please_sign_in">Please sign in</string>
+    <string name="no_events_found">No Events Found</string>
+    <string name="camera_is_not_ready">Camera is not ready</string>
+    <string name="default_error_try_again_message">Something went wrong, please try again later.</string>
+    <string name="unlink_event_snackbar_message">Are you sure you want to unlink this event from this community? Only the event owner can relink.</string>
+    <string name="unlink">Unlink</string>
+    <string name="unlink_event_snackbar_permission_message">You have no permission</string>
+    <string name="my_upcoming_events">My Upcoming Events</string>
+    <string name="event_has_started">Event Has Started</string>
+    <string name="about_to_start">About to start</string>
+    <string name="event_left_days">%d days left</string>
+    <string name="event_left_hours">%d hours left</string>
+    <string name="event_left_minutes">%d minutes left</string>
+    <string name="x_more">%d more</string>
+    <string name="events_near_me">Events Near Me</string>
+    <string name="explore_more">Explore More</string>
+    <string name="distance_localized_text">%.1f km away</string>
+    <string name="no_upcoming_events">There is no upcoming events</string>
+    <string name="search_events">Search Events</string>
+    <string name="communities_you_can_join">Communities You Can Join</string>
+    <string name="members">Members</string>
+    <string name="suggested_communities">Suggested Communities</string>
+    <string name="search_community">Search Community</string>
+    <string name="search">Search</string>
+    <string name="only_by_request">Only by Request</string>
+    <string name="open_to_all">Open to All</string>
+    <string name="hide_data_title">Only participation\'s can see</string>
+    <string name="everyone_can_see_title">Everyone can see</string>
+    <string name="no_events_nearby">No events nearby</string>
+    <string name="location_permission_not_granted">Location permission not granted</string>
+    <string name="grant_permission">Grant permission</string>
+    <string name="location_not_detected">Location not detected</string>
+    <string name="send_request">Send Request to Join</string>
+    <string name="request_sent">Request Sent</string>
+    <string name="join_community">Join the Community</string>
+    <string name="sign_in">Sign in</string>
+    <string name="private_event_switch_text">Only members of selected linked communities can see this event.</string>
+    <string name="private_event_switch_text_description">Choose whether your event will be visible on the map to people who are not members of the linked communities.</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="sign_in_to_participate">Sign in to participate</string>
+    <string name="cancel_the_event">Cancel the Event</string>
+    <string name="cancel_the_event_alert_dialog_text">Are you sure tou want to cancel this event. This process cannot be reversed.</string>
+    <string name="you_are_now_moderator">You are now a moderator.</string>
+    <string name="you_are_now_admin">You are now the admin.</string>
+    <string name="you_are_now_member">You are now a member.</string>
+    <string name="delete_the_community_alert_dialog_text">Are you sure you want to delete this community? This process cannot be reversed.</string>
+    <string name="delete_the_community">Delete the Community</string>
+    <string name="community_has_been_deleted">This community has been deleted</string>
+    <string name="email_already_exists">A user with this email already exists.</string>
+    <string name="home">Main Page</string>
+    <string name="map">Map</string>
+    <string name="my_events">My Events</string>
+    <string name="menu">Menu</string>
+    <string name="admin">Admin</string>
+    <string name="moderator">Moderator</string>
+    <string name="member">Member</string>
+    <string name="non_member">Non-Member</string>
+    <string name="sport">Sport</string>
+    <string name="cultural">Cultural</string>
+    <string name="musical">Musical</string>
+    <string name="meeting">Meeting</string>
+    <string name="organization">Organization</string>
+    <string name="nature">Nature</string>
+    <string name="education">Education</string>
+    <string name="solidarity">Solidarity</string>
+    <string name="party">Party</string>
+    <string name="prefer_not_to_say">Prefer Not to Say</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="my_account">My Account</string>
+    <string name="app_settings">App Settings</string>
+    <string name="sign_out">Sign out</string>
+    <string name="theme">Theme</string>
+    <string name="something_went_wrong_try_again_later">Something went wrong, please try again later.</string>
+    <string name="sharing_post_error_message">Post cannot be shared right now, please try again later</string>
+    <string name="post_has_been_deleted">This post is no longer available or it may have been deleted.</string>
+    <string name="you_are_not_a_member_of_the_community_anymore">You are not a member of this community anymore.</string>
+    <string name="event_has_been_cancelled">The event has been cancelled</string>
+    <string name="message_could_not_be_sent">The message cannot be sent</string>
+    <string name="messages_could_not_be_loaded">Messages could not be loaded, please try again later</string>
+    <string name="messages_cannot_be_recieved">Messages cannot be received right now</string>
+    <string name="signed_in_user_not_found">No users with this information found.</string>
+    <string name="cannot_signed_in">Cannot be signed in</string>
+    <string name="email_cannot_be_sent">E-mail cannot be sent</string>
+    <string name="rewarding_error_message">We could not reward you, please check your internet connection and try again</string>
+    <string name="ad_cannot_be_loaded">Ad cannot be loaded</string>
+    <string name="error">Error</string>
+    <string name="okay">Okay</string>
+    <string name="email">E-Mail</string>
+    <string name="username">Username</string>
+    <string name="next">Next</string>
+    <string name="belongs_to_another_user">It belongs to another user.</string>
+    <string name="field_is_required">This field is required</string>
+    <string name="set_a_password">Set a password</string>
+    <string name="password">Password</string>
+    <string name="password_again">Password (Again)</string>
+    <string name="register">Register</string>
+    <string name="password_must_be_at_least_6_characters">Your password must be at least 6 characters</string>
+    <string name="valid">Valid</string>
+    <string name="passwords_are_different">Passwords are different</string>
+    <string name="passwords_are_same">Passwords are same</string>
+    <string name="begin">Begin!</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="enter_email_to_reset_password">Enter your e-mail to reset your password</string>
+    <string name="your_email_address">Your E-Mail Address</string>
+    <string name="please_check_your_email">Please check your e-mail</string>
+    <string name="send_link_to_reset_password">Send link to reset password</string>
+    <string name="cancel">Cancel</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="create_account">Create Account</string>
+    <string name="continue_with_google">Continue with Google</string>
+    <string name="no_google_accont_found">No Google accounts found</string>
+    <string name="community_settings">Community Settings</string>
+    <string name="event_creation_restriction">Event Creation Restriction</string>
+    <string name="event_creation_restriction_description1">Only admin and moderators can create events associated with the community.</string>
+    <string name="event_creation_restriction_description2">All members can create events associated with the community.</string>
+    <string name="post_sharing_restriction">Post Sharing Restriction</string>
+    <string name="post_sharing_restriction_description1">Only admin and moderators can share post.</string>
+    <string name="post_sharing_restriction_description2">All members can share post.</string>
+    <string name="joining_by_request_only">Joining by Request Only</string>
+    <string name="joining_by_request_only_description1">This community can only be joined by request.</string>
+    <string name="joining_by_request_only_description2">No request is required to join this community</string>
+    <string name="joining_requests">Joining Requests</string>
+    <string name="no_request_to_join">No Request to Join</string>
+    <string name="see_more">See more</string>
+    <string name="accept">Accept</string>
+    <string name="community_description_placeholder">It\'s helpful to define a community description. For example, you can write down the rules you want members to follow.</string>
+    <string name="change_community_name">Change Community Name</string>
+    <string name="change_community_description">Change Community Description</string>
+    <string name="community_name_cannot_be_empty">Community name cannot be empty</string>
+    <string name="retry">Retry</string>
+    <string name="past_events">Past Events</string>
+    <string name="upcoming_events">Upcoming Events</string>
+    <string name="unlink_event_text">Unlink this event from this community.</string>
+    <string name="private_info_warning_text">Event date and address is private. To see, participate the event.</string>
+    <string name="expired">Expired</string>
+    <string name="no_past_events">No Past Events</string>
+    <string name="post_deleted">Post deleted</string>
+    <string name="no_post_yet">No posts yet</string>
+    <string name="private_date">Private Date</string>
+    <string name="image_cannot_be_loaded">Image cannot be loaded</string>
+    <string name="delete_the_post">Delete the Post</string>
+    <string name="comments">Comments</string>
+    <string name="no_comment_yet">No comments yet</string>
+    <string name="write_comment_placeholder">Write a comment…</string>
+    <string name="comment_cannot_be_empty">Comment cannot be empty</string>
+    <string name="delete_the_comment">Delete the Comment</string>
+    <string name="create_post">Create Post</string>
+    <string name="invite_people">Invite People</string>
+    <string name="leave_the_community">Leave the Community</string>
+    <string name="community_page">Community Page</string>
+    <string name="change_picture">Change Picture</string>
+    <string name="remove_picture">Remove Picture</string>
+    <string name="add_community_picture">Add Community Picture</string>
+    <string name="community_description">Community Description</string>
+    <string name="promote">Promote</string>
+    <string name="promote_dialog_text">Are you sure you want to promote this user to moderator?\n\nOnly admin is able to demote moderators back to members.\n\n\nBy promoting the user, you will grant the following permissions:\n\n• Editing community settings\n\n• Promoting members to moderators\n\n• Creating events associated with the community if event creation restriction is on</string>
+    <string name="make_admin">Make Admin</string>
+    <string name="make_admin_dialog_text">Are you sure you want to promote this user to admin?\n\nOnly admin is able to change admin.\n\n\nBy promoting the user, you will grant the following permissions:\n\n• Deleting the community\n\n• Demoting the moderators\n\n• Removing the moderators\' posts.</string>
+    <string name="demote">Demote</string>
+    <string name="demote_dialog_text">Are you sure you want to demote this user to member?\n\nOnly admin is able to promote members back to moderators.</string>
+    <string name="remove">Remove</string>
+    <string name="remove_from_community_dialog_text">Are you sure you want to remove this user from the community?</string>
+    <string name="community_id">Community ID</string>
+    <string name="share_dialog_text">People can find this community by using this community ID</string>
+    <string name="make_someone_else_admin_title">Make someone else admin</string>
+    <string name="make_someone_else_admin_text">You are currently admin. You must make someone else admin before leaving.</string>
+    <string name="got_it">Got it</string>
+    <string name="leave_community_dialog_text">Are you sure you want to leave this community?</string>
+    <string name="leave">Leave</string>
+    <string name="empty_post_warning_message">Please write something or add a picture</string>
+    <string name="what_is_on_your_mind">What\'s on your mind?</string>
+    <string name="comments_on">Comments on</string>
+    <string name="post">Post</string>
+    <string name="write_a_comment">Write a comment..</string>
+    <string name="community_search_placeholder">Community name, description or ID</string>
+    <string name="sign_in_to_create_community">Please sign in to create a community</string>
+    <string name="create">Create</string>
+    <string name="to_see_communities_sign_in">To see your communities please sign in</string>
+    <string name="no_communities_found">No communities found</string>
+    <string name="unpin">Unpin</string>
+    <string name="pin">Pin</string>
+    <string name="create_community">Create Community</string>
+    <string name="community_picture">Community Picture</string>
+    <string name="community_name">Community Name</string>
+    <string name="only_admins_can_create_events_switch_text">Only admin and moderators can create events associated with the community.</string>
+    <string name="only_admins_can_create_events_switch_description">All members of the community can create events associated with the community.</string>
+    <string name="only_admins_can_share_posts_switch_text">Only admin and moderators can share post.</string>
+    <string name="only_admins_can_share_posts_switch_description">All members of the community can share post.</string>
+    <string name="join_community_with_request_switch_text">This community can only be joined by request.</string>
+    <string name="join_community_with_request_switch_description">No request is required to join the community</string>
+    <string name="creating_community_supporting_content">*The community settings can be edited by the admin and moderators at any time.</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="invite_your_communities">Invite Your Communities</string>
+    <string name="invite_your_communities_description">By inviting your community to your event, you can make people in your community aware of your event.</string>
+    <string name="add_community">Add Community</string>
+    <string name="date_cannot_be_in_the_past">Date cannot be in the past</string>
+    <string name="title_cannot_be_empty">Title cannot be empty</string>
+    <string name="type_cannot_be_empty">Type cannot be empty</string>
+    <string name="save">Save</string>
+    <string name="participants_cannot_message">Participants cannot send messages</string>
+    <string name="no_messages">No messages</string>
+    <string name="start_a_conversation">Start a Conversation</string>
+    <string name="only_event_owner_can_message">Only event owner can send message in this chat</string>
+    <string name="event_chat_message_placeholder">Message..</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="event_owner">Event Owner</string>
+    <string name="chat">Chat</string>
+    <string name="event_page">Event Page</string>
+    <string name="people_participating">people participating</string>
+    <string name="address">Address</string>
+    <string name="no_address_provided">No address provided</string>
+    <string name="description">Description</string>
+    <string name="no_description_provided">No description provided</string>
+    <string name="event_linked_to_x_communities">This event is linked to %1s communities</string>
+    <string name="participants">Participants</string>
+    <string name="participation_requests">Participation Requests</string>
+    <string name="no_request_yet">No requests yet</string>
+    <string name="participated">Participated</string>
+    <string name="sign_in_to_see_events">Please sign in to see your events</string>
+    <string name="past">Past</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="your_event">Your Event</string>
+    <string name="create_event">Create Event</string>
+    <string name="linked_community_limit_reached">You can only select up to 5 communities</string>
+    <string name="no_membered_communities">There is no community you are a member of</string>
+    <string name="event_creation_restricted_community_warning_message">Only admins and moderators can create events in this community.</string>
+    <string name="restricted">Restricted</string>
+    <string name="added">Added</string>
+    <string name="add">Add</string>
+    <string name="event_type">Event Type</string>
+    <string name="event_description">Event Description</string>
+    <string name="limit_number_of_participants">Limit the number of participants</string>
+    <string name="participation_settings">Participation Settings</string>
+    <string name="participation_settings_description">You can choose how people participate in your event.</string>
+    <string name="date_and_address_visibility">Date and Address Visibility</string>
+    <string name="date_and_address_visibility_description">You can choose who can see the date and address description of your event on the map</string>
+    <string name="address_description">Address Description</string>
+    <string name="select">Select</string>
+    <string name="title">Title</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="no_events_found_that_match_your_criteria">No events were found that match the search criteria.</string>
+    <string name="search_events_in_this_region">Search Event in This Region</string>
+    <string name="select_location_by_dragging_the_map">Select Location by Dragging the Map</string>
+    <string name="only_public_events">Only Public Events</string>
+    <string name="date_range">Date Range</string>
+    <string name="select_date_range">Select Date Range</string>
+    <string name="clear">Clear</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="_private">Private</string>
+    <string name="private_address">Private Address</string>
+    <string name="verified_with_google">Verified with Google</string>
+    <string name="verified_with_email">Verified with E-Mail</string>
+    <string name="unverified_account">Unverified Account</string>
+    <string name="verify_with_email">Verify with e-mail</string>
+    <string name="sending_verification_link_dialog_text">We sent a verification link to your e-mail. Please check your e-mail and verify your account</string>
+    <string name="real_name_optional">Real Name (Optional)</string>
+    <string name="cannot_change_email_because_of_signing_in_with_google">You can not change your email because you signed in with Google</string>
+    <string name="phone_number_optional">Phone Number (Optional)</string>
+    <string name="change_profile_picture">Change Profile Picture</string>
+    <string name="remove_profile_picture">Remove Profile Picture</string>
+    <string name="upload_profile_picture">Upload a Profile Picture</string>
+    <string name="change_password">Change Password</string>
+    <string name="birth_date">Birth Date</string>
+    <string name="gender">Gender</string>
+    <string name="email_address">E-Mail Address</string>
+    <string name="username_cannot_be_empty">Username cannot be empty</string>
+    <string name="username_already_used">This username already used</string>
+    <string name="change_email_address">Change E-Mail Address</string>
+    <string name="we_sent_a_verification_link">We sent a verification link to your new e-mail address. You can change your e-mail address after verification.</string>
+    <string name="confirm">Confirm</string>
+    <string name="password_cannot_be_empty">Password cannot be empty</string>
+    <string name="email_cannot_be_empty">E-Mail cannot be empty</string>
+    <string name="new_email_address">New E-Mail Address</string>
+    <string name="password_changed_successfully">Password changed successfully</string>
+    <string name="wrong_password_please_check_it">Wrong password, please check it</string>
+    <string name="sending_changing_password_link_dialog_text">We will send a link to your e-mail address to change your password</string>
+    <string name="email_not_found">E-mail not found</string>
+    <string name="link_sent_check_email">Link sent. Please check your e-mail</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="new_password_again">New Password (Again)</string>
+    <string name="sign_in_to_see_upcoming_events">Please sign in to see your upcoming events</string>
+    <string name="your_ticket_will_be_refunded">If your request is rejected, your ticket will be refunded.</string>
+    <string name="your_are_participating">You are participating</string>
+    <string name="send_request_to_participate">Send Request to Participate</string>
+    <string name="participate">Participate</string>
+    <string name="to_see_date_participate_event">To see the date, you must participate the event</string>
+    <string name="where">Where?</string>
+    <string name="to_see_address_participate_event">To see the address, you must participate the event</string>
+    <string name="how">How?</string>
+    <string name="who_organizes">Who organizes?</string>
+    <string name="which_communities_are_linked">Which communities are linked?</string>
+    <string name="x_linked_community">%d linked community</string>
+    <string name="show">Show</string>
+    <string name="purchase_successful">Thanks for purchasing</string>
+    <string name="reward_could_not_be_received_dialog_title">Reward could not be received</string>
+    <string name="reward_could_not_be_received_dialog_text">There was a problem receiving the reward, please try again.</string>
+    <string name="great">Great</string>
+    <string name="congrats">Congrats</string>
+    <string name="you_won_x_y">You won %d %s</string>
+    <string name="need_to_watch_until_end">You need to watch the ad until the end to receive the reward</string>
+    <string name="ad_could_not_be_loaded">Ad could not be loaded</string>
+    <string name="failed_to_show_ad_dialog_text">There was a problem loading the ad, please try again later.</string>
+    <string name="you_have_x_ticket_section_one">You have&#160;</string>
+    <string name="you_have_x_ticket_section_two">&#160;tickets.</string>
+    <string name="you_want_more">You want more?</string>
+    <string name="watch_an_ads">Watch an Ads</string>
+    <string name="or">or</string>
+    <string name="ticket_info">• The cost of creating an event or community is 3 tickets.\n• The cost of participating in an event or community is 2 tickets.\n• The cost of editing an event is 1 ticket.</string>
+    <string name="account_tab_supporting_content">Account Infos • My Tickets</string>
+    <string name="app_settings_tab_supporting_content">Theme • Language</string>
+    <string name="system_default">System Default</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="event">Event</string>
+    <string name="language">Language</string>
+    <string name="turkish">Turkish</string>
+    <string name="english">English</string>
+    <string name="x_members">%s members</string>
+    <string name="x_events">%s events</string>
+    <string name="post_confirm">Post</string>
+    <string name="admin_changed">Admin changed</string>
+    <string name="post_created">Post shared</string>
+    <string name="popular_communities">Popular Communities</string>
+    <string name="new_event_in_community_notification_channel_name">New Event in Community</string>
+    <string name="x_day_ago">%dd ago</string>
+    <string name="now">now</string>
+    <string name="x_hours_ago">%dh ago</string>
+    <string name="x_minutes_ago">%dm ago</string>
+    <string name="x_days_left">%dd left</string>
+    <string name="x_hours_left">%dh left</string>
+    <string name="x_minutes_left">%dm left</string>
+    <string name="ticket">Ticket</string>
+    <string name="purchase_canceled">Purchase Canceled</string>
+    <string name="x_tickets">%d Tickets</string>
+    <string name="x_has_been_loaded_to_your_account">%s has been loaded to your account.</string>
+    <string name="read_and_accept_terms_of_service_append_one">I have read and accept the&#160;</string>
+    <string name="read_and_accept_terms_of_service_append_two">.</string>
+    <string name="terms_of_service_label">Terms of Service</string>
+    <string name="read_and_accept_privacy_policy_append_one">I have read and accept the&#160;</string>
+    <string name="privacy_policy_label">Privacy Policy</string>
+    <string name="read_and_accept_privacy_policy_append_two">.</string>
+    <string name="support_and_feedback">Support and Feedback</string>
+    <string name="send">Send</string>
+    <string name="subject">Subject…</string>
+    <string name="your_message">Your message</string>
+    <string name="feedback_send_error">Your message cannot be sent right now, please try again later.</string>
+    <string name="message_sent">Message Sent</string>
+    <string name="your_feedback_or_support_message_has_been_sent">We will carefully review your message and get back to you as soon as possible at \'%s\'. Thank you for helping us improve Bindle!</string>
+    <string name="participant_limit_cannot_be_one">Invalid participation limit</string>
+    <string name="cannot_edit_past_events">Past events cannot be edited</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="are_you_sure_you_want_to_delete_your_account">Are you sure you want to delete your account permanently?</string>
+    <string name="delete_account_dialog_text">Your purchases and data will be permanently lost. This action cannot be undone.</string>
+    <string name="report">Report</string>
+    <string name="report_the_post">Report the Post</string>
+    <string name="violation">Violation</string>
+    <string name="sexual_content_or_nudity">Sexual Content or Nudity</string>
+    <string name="something_else">Something Else</string>
+    <string name="violence">Violence</string>
+    <string name="please_select_one">Please select one</string>
+    <string name="optional_description">Description (Optional)</string>
+    <string name="report_sent">Your report has been send</string>
+    <string name="are_you_sure_you_want_to_delete_the_post">Are you sure you want to delete the post?</string>
+    <string name="delete">Delete</string>
+    <string name="child_abuse_or_illegal_content">Child Abuse or İllegal Content</string>
+    <string name="disruptive_behavior_or_harassment">Disruptive Behavior or Harassment</string>
+    <string name="report_the_user">Report the User</string>
+    <string name="ticket_dialog_info_button_text">Click here to get information about tickets and see what to consider when purchasing.</string>
+    <string name="costs">Costs</string>
+    <string name="creation_of_event_or_community">Creation of event or community</string>
+    <string name="participation_of_event_or_community">Participation an event or community</string>
+    <string name="changing_information_of_event">Changing information of an event</string>
+    <string name="verify">Verify</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="comments_are_disabled">Comments are disabled</string>
+    <string name="location_permission_rationale">We need your location to see events near you. Your location is not shared with anyone.</string>
+    <string name="permission_settings">Permission Settings</string>
+    <string name="media_permission_rationale">Please grant media permission to upload images.</string>
+    <string name="user_does_not_exist">User does not exist</string>
+    <string name="event_does_not_exist">The event does not exist anymore</string>
 </resources>

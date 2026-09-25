@@ -16,10 +16,20 @@ class AuthRepositoryImpl @Inject constructor(val ds: AuthDataSource) : AuthRepos
         withContext(Dispatchers.IO) { ds.loginUser(email, password) }
 
 
-    override suspend fun registerUser(email: String, password: String): Resource<AuthResult> =
-        withContext(Dispatchers.IO) { ds.registerUser(email, password) }
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String): Resource<AuthResult> =
+        withContext(Dispatchers.IO) { ds.createUserWithEmailAndPassword(email, password) }
 
-    override suspend fun signOut() = withContext(Dispatchers.IO){ds.signOut()}
+    override suspend fun signOut(uid: String) = withContext(Dispatchers.IO){ds.signOut(uid)}
+    override suspend fun signInWithGoogle(idToken: String): Resource<AuthResult> =
+        withContext(Dispatchers.IO){ds.signInWithGoogle(idToken)}
+
+    override suspend fun checkIfUserExists(email: String): Resource<Boolean> =
+        withContext(Dispatchers.IO){ds.checkIfUserExists(email)}
+
+    override suspend fun reloadUserInformation(): Resource<Boolean> =
+        withContext(Dispatchers.IO){ds.reloadUserInformation()}
+
+
     override suspend fun sendPasswordResetEmail(email: String): Resource<Boolean> =
         withContext(Dispatchers.IO){ds.sendPasswordResetEmail(email)}
 
@@ -36,4 +46,6 @@ class AuthRepositoryImpl @Inject constructor(val ds: AuthDataSource) : AuthRepos
         withContext(Dispatchers.IO){ds.updateUserPhotoUrl(imageUri)}
 
     override fun getCurrentUser(): Flow<FirebaseUser?> = ds.getCurrentUser().flowOn(Dispatchers.IO)
+    override suspend fun deleteAccount(user: FirebaseUser, password: String): Resource<Unit> =
+        withContext(Dispatchers.IO){ds.deleteAccount(user, password)}
 }

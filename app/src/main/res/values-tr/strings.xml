@@ -1,0 +1,506 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Bindle</string>
+    <string name="default_web_client_id">206307366068-c1upmetl9aftbtpfv4gekn0kskrd13ah.apps.googleusercontent.com</string>
+    <string name="algolia_application_id">7N9AAEUVBL</string>
+    <string name="algolia_search_only_api_key">1878e6378e258081864b74ba93ba76be</string>
+    <string name="algolia_index_events">bindle</string>
+    <string name="google_ads_application_id">ca-app-pub-7301531305273083~1804662604</string>
+    <string name="rewarded_ad_test_id">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="rewarded_ad_id">ca-app-pub-7301531305273083/9207114674</string>
+    <string name="open_ad_test_id">ca-app-pub-3940256099942544/9257395921</string>
+    <string name="open_ad_id">ca-app-pub-7301531305273083/9900129684</string>
+    <string name="event_message_notification_channel_id">event_message_notification_id</string>
+    <string name="event_message_notification_channel_name">You Have a New Message</string>
+    <string name="maps_api_key">AIzaSyD8eX8ddqtyv2Mt-3XDXfx-q1oXzPIe1nY</string>
+    <string name="new_message_notification_title">%s Etkinliğinden Yeni Mesaj</string>
+    <string name="event_request_notification_channel_name">Request to Participate Event</string>
+    <string name="community_participation_notification_channel_name">Community Participation</string>
+    <string name="community_request_notification_channel_name">Community Request to Participate</string>
+    <string name="post_liked_notification_channel_name">Post has Liked</string>
+    <string name="post_comment_notification_channel_name">New Comments For Your Post</string>
+    <string name="ten_tickets">ten_tickets</string>
+    <string name="twenty_tickets">twenty_tickets</string>
+    <string name="thirty_tickets">thirty_tickets</string>
+    <string name="privacy_policy">Gizlilik Politikası\n\n
+Bindle (bundan sonra \"Uygulama\", \";Biz\", \"Bize\", \"Bizim\" olarak anılacaktır), kullanıcıların kişisel bilgilerini toplar, kullanır ve korur. Bu Gizlilik Politikası, kullanıcılarımızın kişisel verilerinin nasıl toplandığını, kullanıldığını, paylaşıldığını ve korunduğunu açıklamaktadır.\n\n
+1. Toplanan Bilgiler\n\n
+Bindle, kullanıcıların kişisel bilgilerini yalnızca aşağıdaki amaçlarla toplar:\n\n
+- Zorunlu Bilgiler:\n
+- Reklam Kimliği: Uygulama içerisinde reklamlarla etkileşime giren kullanıcılar için, cihazları tarafından sağlanan Reklam Kimliği, hedefli reklamcılık ve performans analizi amacıyla kullanılabilir.\n
+- Kullanıcı Adı: Kullanıcılar, uygulama içinde benzersiz bir kullanıcı adı belirler.\n
+- E-posta Adresi: Kullanıcıların uygulama içindeki hesaplarıyla ilişkilendirilmiş e-posta adresleri.\n\n
+- Opsiyonel Bilgiler:\n
+- Profil Fotoğrafı: Kullanıcılar, profil fotoğrafı yüklemek isteyebilirler.\n
+- Gerçek İsim, Telefon Numarası ve Cinsiyet: Bu bilgiler şu an için herhangi bir amaçla toplanmamaktadır. Ancak, ilerleyen dönemlerde kullanıcı deneyimini geliştirmek amacıyla bu bilgilerin kullanılmasına karar verilmesi durumunda, Gizlilik Politikamızda gerekli güncellemeler yapılacaktır.\n
+- Konum Bilgisi: Kullanıcılar, yakınlarındaki etkinlikleri görmek için konum izni verebilirler. Konum bilgisi yalnızca kullanıcının kendisi tarafından görüntülenebilir.\n\n
+2. Bilgilerin Kullanımı\n\n
+Toplanan bilgiler şu amaçlarla kullanılabilir:\n
+- Hedefli reklamların gösterilmesi: Reklam kimliği, AdMob gibi üçüncü taraf reklam ağları aracılığıyla kişiselleştirilmiş ve kişiselleştirilmemiş reklamlar sunmak için kullanılır.\n
+- Kullanıcı hesaplarını oluşturmak ve yönetmek\n
+- Etkinliklerin oluşturulması ve kullanıcıların etkinliklere katılması\n
+- Kullanıcıların konumlarına yakın etkinlikleri gösterme\n
+- Uygulama içindeki sosyal etkileşimleri (topluluklar, etkinlik sohbetleri, vb.) sağlamak\n
+- Uygulama içi satın alımların işlenmesi (sadece tüketilebilir ürünler için)\n\n
+3. Bilgilerin Paylaşılması\n\n
+Bindle, kullanıcı bilgilerini üçüncü şahıslarla paylaşmaz, ancak şu durumlarda paylaşılabilir:\n
+- Üçüncü Taraf Hizmet Sağlayıcılar: AdMob reklamları ve Play Store\';un satın alma işlemleri için üçüncü taraf hizmet sağlayıcılar kullanılır. Bu hizmetler, kullanıcının bilgilerini yalnızca gerekli işlemleri gerçekleştirmek için kullanabilir.\n
+- Yasal Gereklilikler: Yasal talepler veya devlet yetkililerinin talepleri doğrultusunda bilgiler paylaşılabilir.\n\n
+4. Veri Güvenliği\n\n
+Bindle, kullanıcı verilerinin güvenliğini sağlamak için sektördeki en iyi güvenlik önlemleriyle çalışmaktadır. Ancak, internet üzerinden veri iletiminin tamamen güvenli olduğunu garanti edemeyiz.\n\n
+5. Kullanıcı Hakları\n\n
+Kullanıcılar aşağıdaki haklara sahiptir:\n
+- Kişisel verilerine erişim sağlama\n
+- Kişisel verilerinin güncellenmesini talep etme\n
+- Hesaplarını silme talebinde bulunma\n
+- Gizlilik politikasıyla ilgili her türlü soruyu sorma\n\n
+6. Üçüncü Taraf Bağlantıları\n\n
+Uygulama, AdMob gibi üçüncü taraf hizmetlere ve Play Store\'un satın alma sistemi gibi özelliklere bağlantılar içerebilir. Bu üçüncü tarafların gizlilik politikaları, Bindle\'ın politikalarından bağımsızdır ve biz bunlar için sorumlu değiliz.\n
+Uygulama, reklamları sunmak için AdMob dahil olmak üzere üçüncü taraf hizmetleri kullanır. Bu hizmetler, hedefli reklam sağlamak için cihazın Reklam Kimliğini kullanabilir. Kullanıcılar, Reklam Kimliği tercihlerini cihaz ayarlarından yönetebilir.\n\n
+7. Politika Değişiklikleri\n\n
+Bu Gizlilik Politikası, zaman zaman güncellenebilir. Değişiklikler yapıldığında, güncellenmiş politika uygulama içinde duyurulacaktır. Kullanıcılar, gizlilik politikamızdaki değişikliklerden haberdar olmak için düzenli olarak bu sayfayı kontrol etmelidir.\n\n
+8. İletişim\n\n
+Bu Gizlilik Politikası hakkında sorularınız veya endişeleriniz varsa, bizimle şu iletişim adresi üzerinden iletişime geçebilirsiniz:\n\n
+E-posta: bindledestek@gmail.com\n
+</string>
+<string name="terms_of_service">
+Giriş\n\n
+Bu Hizmet Şartları (\"Şartlar\") Bindle uygulamasını (\"Uygulama\") kullanmanızla ilgili olarak geçerlidir. Uygulamayı kullanarak, bu Şartları kabul etmiş sayılırsınız. Eğer bu Şartları kabul etmiyorsanız, lütfen Uygulamayı kullanmayın.\n\n
+Yaş Sınırı ve Kullanıcı Yükümlülükleri\n\n
+1. Uygulama, 13 yaş ve üzeri kullanıcılar için kullanılabilir. 13 yaşından küçük kullanıcıların Uygulamayı kullanması yasaktır.\n
+2. Uygulamayı kullanırken, yasadışı amaçlarla kullanmamanız, başkalarının haklarını ihlal etmemeniz ve tüm yasal düzenlemelere uymanız beklenir.\n
+3. Uygulama, kullanıcıları, diğer kullanıcıları rahatsız etmekten veya zarar vermekten kaçınmaya teşvik eder.\n\n
+Hizmetin Kısıtlamaları ve Sorumluluk Reddi\n\n
+1. Uygulamanın kesintisiz veya hatasız çalışacağına dair herhangi bir garanti verilmemektedir.\n
+2. Uygulamanın kullanımından kaynaklanabilecek herhangi bir veri kaybı veya zarar için sorumluluk kabul edilmez.\n
+3. Hesabınız, bu Şartları ihlal etmeniz durumunda askıya alınabilir veya sonlandırılabilir.\n\n
+Çocuk Cinsel İstismarı ve İstismarının Önlenmesi (CSAE)\n\n
+1. Uygulama, çocukları cinsel istismardan, istismardan ve uygunsuz içerikten korumayı taahhüt eder.\n
+2. İçerik Bildirimi ve Moderasyon: Kullanıcılar, uygulama içi "Gönderiyi Şikayet Et", "Kullanıcıyı Şikayet Et" ve "Geri Bildirim ve Destek" özelliğini kullanarak, potansiyel CSAE ile ilgili içerikler de dahil olmak üzere uygunsuz içerikleri bildirebilir. Bu raporlar moderasyon ekibimiz tarafından derhal incelenir.\n
+3.Yasak İçerik: Çocuk istismarı veya suistimali içeren her türlü içerik kesinlikle yasaktır ve derhal kaldırılıp hesabın kalıcı olarak askıya alınmasıyla sonuçlanacaktır.\n
+4.Yetkililerle İşbirliği: Bindle, Ulusal Kayıp ve İstismara Uğramış Çocuklar Merkezi (NCMEC) ve ilgili kolluk kuvvetleri gibi kuruluşlarla işbirliği yapmaktadır.\n
+5.CSAE standartları hakkında daha fazla bilgi için lütfen aşağıdaki kaynaklara bakın:\n
+*Ulusal Kayıp ve İstismara Uğramış Çocuklar Merkezi (NCMEC): https://www.missingkids.org/\n
+*İnternet İzleme Vakfı (IWF): https://www.iwf.org.uk/\n
+*UNICEF Çocuk Koruma İlkeleri: https://www.unicef.org/protection\n\n
+Veri Kullanımı ve Gizlilik\n\n
+1. Uygulama, yalnızca kullanıcı adı, e-posta adresi, profil fotoğrafı (opsiyonel) ve konum verisini toplar.\n
+2. Konum verisi yalnızca kullanıcının kendisi tarafından görülebilir ve etkinlik önerileri için kullanılacaktır.\n
+3. Kullanıcı adı ve profil fotoğrafı, etkinlik ve topluluklar içinde diğer kullanıcılarla paylaşılabilir.\n
+4. Kullanıcı verileri, yalnızca uygulama içindeki kullanıcı deneyimini iyileştirmek amacıyla kullanılacaktır.\n\n
+Üçüncü Taraf Bağlantılar ve Reklamlar\n\n
+1. Uygulama, üçüncü taraf reklam sağlayıcısı AdMob\'u kullanmaktadır. Bu, reklamlar ve diğer içerikler aracılığıyla kullanıcı verisinin toplanabileceği anlamına gelir.\n
+2. AdMob ve diğer üçüncü taraf hizmetleri, kullanıcı verilerini toplayabilir ve kullanabilir. Bu hizmetlerin gizlilik politikalarını gözden geçirmeniz önerilir.\n\n
+Hesap Silme ve Uygulama Sonlandırma\n\n
+1. Kullanıcılar, Uygulama içinden hesaplarını ve verilerini silebilirler.\n
+2. Uygulamanın herhangi bir zamanda güncellenmesi veya sonlandırılması durumunda, kullanıcılar bilgilendirilecektir. Uygulama hizmetlerinin kesintisiz sunulacağına dair herhangi bir garanti verilmemektedir.\n\n
+Satın Almayla İlgili Uyarılar ve Yükümlülükler\n\n
+Uygulama içi bilet satın alırsanız ve ödemeniz onaylanırsa, ödülünüz teslim edilene kadar aynı hesapta oturum açmanız önemle tavsiye edilir. Bu işlem sırasında oturumu kapatmaktan veya hesap değiştirmekten kaçının.\n
+Ödeme durumunuz \"onaylandı\" ise ancak ödülün Uygulamada yansıması zaman alırsa ve bu arada başka bir hesaba geçerseniz, sistem kontrolleri nedeniyle yeni hesap ödülü yanlışlıkla alabilir. Bu tür sorunları önlemek için işlem tamamlanana kadar hesap değiştirmeyin.\n
+Satın aldıktan sonra ödülünüzü almazsanız, Uygulama menüsündeki \"Geri Bildirim ve Destek\" seçeneği aracılığıyla bizimle iletişime geçebilir veya yardım için bindledestek@gmail.com adresine e-posta gönderebilirsiniz.\n
+Bu yönergeleri takip etmemek ve erken hesap değiştirmek bizim sorumluluğumuzda olmayacaktır ve bu tür olaylar için hiçbir sorumluluk kabul etmiyoruz.\n\n
+Hesap Doğrulaması ve Sahipliği\n\n
+Hesabınızı e-posta veya Google aracılığıyla doğrulamazsanız, e-posta adresinin gerçek sahibi daha sonra \"Google ile oturum aç\" veya \"Şifremi unuttum\" seçeneğini kullanarak hesabı geri alabilir. Bu nedenle, herhangi bir satın alma işlemi yapmadan önce hesabın size ait olduğunu doğrulamanız önemle tavsiye edilir.\n
+Hesap doğrulamasının eksikliği nedeniyle sahiplik anlaşmazlıkları ortaya çıkarsa hesapları veya satın alımları başka bir kullanıcıya devredemeyiz. Kullanıcılar, satın alma işlemi yapmadan önce hesaplarının güvenli ve doğrulanmış olduğundan emin olmaktan tek başlarına sorumludurlar.\n
+</string>
+    <string name="greeting_page_community_text">Topluluklara katılın, gönderiler ya da güncellemeler yayınlayın ve topluluğunuza bağlı etkinlikler organize edin.</string>
+    <string name="greeting_page_event_text">Etkinliğinizi özelleştirin ve katılımcılarla organize olun.</string>
+    <string name="greeting_page_discover_text">%s ile yakınınızdaki etkinlikleri harita üzerinde keşfedin ve kendi etkinliklerinizi oluşturun.</string>
+    <string name="discover">Keşfet</string>
+    <string name="events">Etkinlikler</string>
+    <string name="communities">Topluluklar</string>
+    <string name="greeting_page_account_text">%s\'i tam olarak kullanabilmeniz için doğrulanmış bir hesaba sahip olmalısınız. Profilinizi yönetmek ve hesabınızı doğrulamak için profil sekmesini istediğiniz zaman ziyaret edebilirsiniz.</string>
+    <string name="your_account">Hesabınız</string>
+    <string name="algolia_index_communities">bindle_communities</string>
+    <string name="community_search_idle_text">Toplulukları keşfet</string>
+    <string name="community_search_empty_text">Topluluk bulunamadı</string>
+    <string name="event_search_idle_text">Etkinlikleri keşfet</string>
+    <string name="unverified_account_alert_dialog_text">Henüz hesabınızı doğrulamadınız, lütfen hesabınızı doğrulayın ya da Google ile giriş yapın.</string>
+    <string name="unverified_account_alert_dialog_title">Hesabınızı Doğrulayın</string>
+    <string name="verify_now">Şimdi Doğrula</string>
+    <string name="later">Daha sonra</string>
+    <string name="please_sign_in_to_create_event">Etkinlik oluşturmak için lütfen giriş yapın</string>
+    <string name="please_sign_in">Lütfen giriş yapın</string>
+    <string name="no_events_found">Etkinlik Bulunamadı</string>
+    <string name="camera_is_not_ready">Kamera henüz hazır değil</string>
+    <string name="default_error_try_again_message">Bir şeyler ters gitti, lütfen daha sonra tekrar deneyin.</string>
+    <string name="unlink_event_snackbar_message">Bu etkinliğin topluluğunuzla olan bağlantısını kaldırmak istediğinizden emin misiniz? Yalnızca etkinlik sahibi tekrar bağlayabilir.</string>
+    <string name="unlink">Bağlantıyı Kes</string>
+    <string name="unlink_event_snackbar_permission_message">Yetkiniz yok</string>
+    <string name="my_upcoming_events">Yaklaşan Etkinliklerim</string>
+    <string name="event_has_started">Etkinlik Başladı</string>
+    <string name="about_to_start">Başlamak üzere</string>
+    <string name="event_left_days">%d gün kaldı</string>
+    <string name="event_left_hours">%d saat kaldı</string>
+    <string name="event_left_minutes">%d dakika kaldı</string>
+    <string name="x_more">%d daha</string>
+    <string name="events_near_me">Yakınımdaki Etkinlikler</string>
+    <string name="explore_more">Daha Fazlasını Keşfet</string>
+    <string name="distance_localized_text">%.1f km uzakta</string>
+    <string name="no_upcoming_events">Yaklaşan etkinlik yok</string>
+    <string name="search_events">Etkinlik Ara</string>
+    <string name="communities_you_can_join">Katılabileceğin Topluluklar</string>
+    <string name="members">Üyeler</string>
+    <string name="suggested_communities">Önerilen Topluluklar</string>
+    <string name="search_community">Topluluk Ara</string>
+    <string name="search">Ara</string>
+    <string name="only_by_request">Yalnızca İstek ile</string>
+    <string name="open_to_all">Herkese Açık</string>
+    <string name="hide_data_title">Yalnızca katılımcılar görebilir</string>
+    <string name="everyone_can_see_title">Herkes görebilir</string>
+    <string name="no_events_nearby">Yakınlarda etkinlik yok</string>
+    <string name="location_permission_not_granted">Konum izni verilmedi</string>
+    <string name="grant_permission">İzin ver</string>
+    <string name="location_not_detected">Konum algılanamadı</string>
+    <string name="send_request">Katılma İsteği Gönder</string>
+    <string name="request_sent">İstek Gönderildi</string>
+    <string name="join_community">Topluluğa Katıl</string>
+    <string name="sign_in">Giriş yap</string>
+    <string name="private_event_switch_text">Yalnızca seçili bağlantılı toplulukların üyeleri bu etkinliği görebilir.</string>
+    <string name="private_event_switch_text_description">Etkinliğinizin bağlantılı toplulukların üyesi olmayan kişiler tarafından haritada görülüp görülmeyeceğini seçin.</string>
+    <string name="something_went_wrong">Bir şeyler ters gitti</string>
+    <string name="sign_in_to_participate">Katılmak için giriş yapın</string>
+    <string name="cancel_the_event">Etkinliği İptal Et</string>
+    <string name="cancel_the_event_alert_dialog_text">Etkinliği iptal etmek istediğinizden emin misiniz?. Bu işlem geri alınamaz.</string>
+    <string name="you_are_now_moderator">Artık moderatörsünüz.</string>
+    <string name="you_are_now_admin">Artık yöneticisiniz.</string>
+    <string name="you_are_now_member">Artık üyesiniz.</string>
+    <string name="delete_the_community_alert_dialog_text">Topluluğu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</string>
+    <string name="delete_the_community">Topluluğu Sil</string>
+    <string name="community_has_been_deleted">Bu topluluk silindi</string>
+    <string name="email_already_exists">Bu e-mail adresine sahip kullanıcı zaten mevcut.</string>
+    <string name="home">Ana Sayfa</string>
+    <string name="map">Harita</string>
+    <string name="my_events">Etkinliklerim</string>
+    <string name="menu">Menü</string>
+    <string name="admin">Yönetici</string>
+    <string name="moderator">Moderatör</string>
+    <string name="member">Üye</string>
+    <string name="non_member">Üye Değil</string>
+    <string name="sport">Spor</string>
+    <string name="cultural">Kültürel</string>
+    <string name="musical">Müzikal</string>
+    <string name="meeting">Buluşma</string>
+    <string name="organization">Organizasyon</string>
+    <string name="nature">Doğa</string>
+    <string name="education">Eğitim</string>
+    <string name="solidarity">Dayanışma</string>
+    <string name="party">Parti</string>
+    <string name="prefer_not_to_say">Söylememeyi Tercih Ederim</string>
+    <string name="male">Erkek</string>
+    <string name="female">Kadın</string>
+    <string name="my_account">Hesabım</string>
+    <string name="app_settings">Uygulama Ayarları</string>
+    <string name="sign_out">Çıkış yap</string>
+    <string name="theme">Tema</string>
+    <string name="something_went_wrong_try_again_later">Bir şeyler ters gitti, lütfen daha sonra tekrar deneyin.</string>
+    <string name="sharing_post_error_message">Gönderi şu anda paylaşılamıyor, lütfen daha sonra tekrar deneyin</string>
+    <string name="post_has_been_deleted">Bu gönderi artık mevcut değil veya silinmiş olabilir.</string>
+    <string name="you_are_not_a_member_of_the_community_anymore">Artık bu topluluğun üyesi değilsiniz.</string>
+    <string name="event_has_been_cancelled">Etkinlik iptal edildi</string>
+    <string name="message_could_not_be_sent">Mesaj gönderilemedi</string>
+    <string name="messages_could_not_be_loaded">Mesajlar yüklenemedi, lütfen daha sonra tekrar deneyin</string>
+    <string name="messages_cannot_be_recieved">Mesajlar şu anda alınamıyor</string>
+    <string name="signed_in_user_not_found">Bu bilgilere sahip kullanıcı bulunamadı.</string>
+    <string name="cannot_signed_in">Giriş yapılamadı</string>
+    <string name="email_cannot_be_sent">E-posta gönderilemedi</string>
+    <string name="rewarding_error_message">Sizi ödüllendiremedik, lütfen internet bağlantınızı kontrol edin ve tekrar deneyin</string>
+    <string name="ad_cannot_be_loaded">Reklam yüklenemedi</string>
+    <string name="error">Hata</string>
+    <string name="okay">Tamam</string>
+    <string name="email">E-Posta</string>
+    <string name="username">Kullanıcı Adı</string>
+    <string name="next">Sonraki</string>
+    <string name="belongs_to_another_user">Başka bir kullanıcıya ait</string>
+    <string name="field_is_required">Bu alan gereklidir</string>
+    <string name="set_a_password">Şifre belirle</string>
+    <string name="password">Şifre</string>
+    <string name="password_again">Şifre (Tekrar)</string>
+    <string name="register">Kayıt ol</string>
+    <string name="password_must_be_at_least_6_characters">Şifreniz en az 6 karakter olmalıdır</string>
+    <string name="valid">Geçerli</string>
+    <string name="passwords_are_different">Şifreler farklı</string>
+    <string name="passwords_are_same">Şifreler aynı</string>
+    <string name="begin">Başla!</string>
+    <string name="reset_password">Şifre Sıfırla</string>
+    <string name="enter_email_to_reset_password">Şifrenizi sıfırlamak için e-posta adresinizi girin</string>
+    <string name="your_email_address">E-Posta Adresiniz</string>
+    <string name="please_check_your_email">Lütfen e-postanızı kontrol edin</string>
+    <string name="send_link_to_reset_password">Şifre sıfırlama bağlantısı gönder</string>
+    <string name="cancel">İptal</string>
+    <string name="forgot_password">Şifreyi mi unuttunuz?</string>
+    <string name="create_account">Hesap Oluştur</string>
+    <string name="continue_with_google">Google ile Devam Et</string>
+    <string name="no_google_accont_found">Google hesabı bulunamadı</string>
+    <string name="community_settings">Topluluk Ayarları</string>
+    <string name="event_creation_restriction">Etkinlik Oluşturma Kısıtlaması</string>
+    <string name="event_creation_restriction_description1">Yalnızca yönetici ve moderatörler topluluk ile bağlantılı etkinlikler oluşturabilir.</string>
+    <string name="event_creation_restriction_description2">Tüm üyeler topluluk ile bağlantılı etkinlikler oluşturabilir.</string>
+    <string name="post_sharing_restriction">Gönderi Paylaşma Kısıtlaması</string>
+    <string name="post_sharing_restriction_description1">Yalnızca yönetici ve moderatörler gönderi paylaşabilir.</string>
+    <string name="post_sharing_restriction_description2">Tüm üyeler gönderi paylaşabilir.</string>
+    <string name="joining_by_request_only">Yalnızca İstek ile Katılım</string>
+    <string name="joining_by_request_only_description1">Bu topluluğa yalnzıca istek ile katılınabilir.</string>
+    <string name="joining_by_request_only_description2">Topluluğa katılmak için istek gerekmez.</string>
+    <string name="joining_requests">Katılma İstekleri</string>
+    <string name="no_request_to_join">Katılma İsteği Yok</string>
+    <string name="see_more">Daha fazla gör</string>
+    <string name="accept">Kabul Et</string>
+    <string name="community_description_placeholder">Bir topluluk açıklaması tanımlamak yararlıdır. Örneğin, üyelerin uyması gereken kuralları yazabilirsiniz.</string>
+    <string name="change_community_name">Topluluk İsmini Değiştirin</string>
+    <string name="change_community_description">Topluluk Açıklamasını Değiştirin</string>
+    <string name="community_name_cannot_be_empty">Topluluk ismi boş olamaz</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="past_events">Geçmiş Etkinlikler</string>
+    <string name="upcoming_events">Yaklaşan Etkinlikler</string>
+    <string name="unlink_event_text">Etkinliğin toplulukla bağlantısını kaldırın.</string>
+    <string name="private_info_warning_text">Etkinlik tarihi ve adresi gizli. Görmek için etkinliğe katılın.</string>
+    <string name="expired">Süresi Geçti</string>
+    <string name="no_past_events">Geçmiş Etkinlik Yok</string>
+    <string name="post_deleted">Gönderi silindi</string>
+    <string name="no_post_yet">Henüz gönderi yok</string>
+    <string name="private_date">Gizli Tarih</string>
+    <string name="image_cannot_be_loaded">Görsel yüklenemedi</string>
+    <string name="delete_the_post">Gönderiyi Silin</string>
+    <string name="comments">Yorumlar</string>
+    <string name="no_comment_yet">Henüz yorum yok</string>
+    <string name="write_comment_placeholder">Yorum yazın…</string>
+    <string name="comment_cannot_be_empty">Yorum boş olamaz</string>
+    <string name="delete_the_comment">Yorumu Silin</string>
+    <string name="create_post">Gönderi Oluşturun</string>
+    <string name="invite_people">İnsanları Davet Edin</string>
+    <string name="leave_the_community">Topluluktan Ayrılın</string>
+    <string name="community_page">Topluluk Sayfası</string>
+    <string name="change_picture">Resmi Değiştirin</string>
+    <string name="remove_picture">Resmi Kaldırın</string>
+    <string name="add_community_picture">Topluluk Resmi Ekleyin</string>
+    <string name="community_description">Topluluk Açıklaması</string>
+    <string name="promote">Terfi Ettir</string>
+    <string name="promote_dialog_text">Bu kullanıcıyı moderatörlüğe terfi ettirmek istediğinizden emin misiniz?\n\nYalnızca yönetici bir moderatörün rütbesini tekrar düşürebilir.\n\n\nKullanıcıyı terfi ettirerek şu yetkileri vereceksiniz:\n\n• Topluluk ayarlarını değiştirme\n\n• Üyeleri moderatörlüğe yükseltme\n\n• Etkinlik oluşturma kısıtlaması açıksa toplulukla ilişkili etkinlikler oluşturma</string>
+    <string name="make_admin">Yönetici Yap</string>
+    <string name="make_admin_dialog_text">Bu kullanıcıyı yönetici yapmak istediğinize emin misiniz?\n\nYalnızca yönetici tekrar yöneticiyi değiştirebilir.\n\n\nKullanıcıyı terfi ettirerek şu yetkileri vereceksiniz:\n\n• Topluluğu silme\n\n• Moderatörlerin rütbesini düşürme\n\n• Moderatörlerin gönderilerini kaldırma.</string>
+    <string name="demote">Rütbe Düşür</string>
+    <string name="demote_dialog_text">Bu kullanıcıyı üyeliğe düşürmek istediğinizden emin misiniz?\n\nÜyeleri tekrar moderatörlüğe terfi ettirme yetkisi yalnızca yöneticiye aittir.</string>
+    <string name="remove">Çıkart</string>
+    <string name="remove_from_community_dialog_text">Bu kullanıcıyı topluluktan çıkarmak istediğinizden emin misiniz?</string>
+    <string name="community_id">Topluluk ID\'si</string>
+    <string name="share_dialog_text">İnsanlar bu topluluğu bu ID\'yi kullanarak bulabilirler</string>
+    <string name="make_someone_else_admin_title">Başka birini yönetici yapın</string>
+    <string name="make_someone_else_admin_text">Şu anda yöneticisiniz. Ayrılmak için başka birini yönetici yapmalısınız.</string>
+    <string name="got_it">Anladım</string>
+    <string name="leave_community_dialog_text">Topluluktan ayrılmak istediğinize emin misiniz?</string>
+    <string name="leave">Ayrıl</string>
+    <string name="empty_post_warning_message">Lütfen bir şeyler yazın ya da bir görsel ekleyin</string>
+    <string name="what_is_on_your_mind">Aklınızda ne var?</string>
+    <string name="comments_on">Yorumlar açık</string>
+    <string name="post">Gönderi</string>
+    <string name="write_a_comment">Yorum yazın…</string>
+    <string name="community_search_placeholder">Topluluk ismi, açıklaması ya da ID\'si</string>
+    <string name="sign_in_to_create_community">Topluluk oluşturmak için giriş yapın</string>
+    <string name="create">Oluştur</string>
+    <string name="to_see_communities_sign_in">Topluluklarınızı görmek için giriş yapın</string>
+    <string name="no_communities_found">Topluluk bulunamadı</string>
+    <string name="unpin">Sabitlemeyi kaldır</string>
+    <string name="pin">Sabitle</string>
+    <string name="create_community">Topluluk Oluştur</string>
+    <string name="community_picture">Topluluk Resmi</string>
+    <string name="community_name">Topluluk İsmi</string>
+    <string name="only_admins_can_create_events_switch_text">Yalnızca yönetici ve moderatörler topluluk ile bağlantılı etkinlikler oluşturabilir.</string>
+    <string name="only_admins_can_create_events_switch_description">Tüm üyeler topluluk ile bağlantılı etkinlikler oluşturabilir.</string>
+    <string name="only_admins_can_share_posts_switch_text">Yalnızca yönetici ve moderatörler gönderi paylaşabilir.</string>
+    <string name="only_admins_can_share_posts_switch_description">Tüm üyeler gönderi paylaşabilir.</string>
+    <string name="join_community_with_request_switch_text">Topluluğa yalnızca istek ile katılınabilir.</string>
+    <string name="join_community_with_request_switch_description">Topluluğa katılmak için istek gerekmez.</string>
+    <string name="creating_community_supporting_content">*Topluluk ayarları yönetici ve modeatörler tarafından istenildiği zaman değiştirilebilir..</string>
+    <string name="edit_event">Etkinliği Düzenle</string>
+    <string name="invite_your_communities">Topluluklarını Davet Et</string>
+    <string name="invite_your_communities_description">Topluluğunuzu etkinliğinize davet ederek, topluluğunuzdaki insanların etkinliğinizden haberdar olmasını sağlayabilirsiniz.</string>
+    <string name="add_community">Topluluk Ekle</string>
+    <string name="date_cannot_be_in_the_past">Tarih geçmişte olamaz</string>
+    <string name="title_cannot_be_empty">Başlık boş olamaz</string>
+    <string name="type_cannot_be_empty">Tür boş olamaz</string>
+    <string name="save">Kaydet</string>
+    <string name="participants_cannot_message">Katılımcılar mesaj gönderemez.</string>
+    <string name="no_messages">Mesaj yok</string>
+    <string name="start_a_conversation">Bir Sohbet Başlat</string>
+    <string name="only_event_owner_can_message">Bu sohbette yalnızca etkinlik sahibi mesaj gönderebilir</string>
+    <string name="event_chat_message_placeholder">Mesaj…</string>
+    <string name="yesterday">Dün</string>
+    <string name="event_owner">Etkinlik Sahibi</string>
+    <string name="chat">Sohbet</string>
+    <string name="event_page">Etkinlik Sayfası</string>
+    <string name="people_participating">kişi katılıyor</string>
+    <string name="address">Adres</string>
+    <string name="no_address_provided">Adres sağlanmadı</string>
+    <string name="description">Açıklama</string>
+    <string name="no_description_provided">Açıklama sağlanmadı</string>
+    <string name="event_linked_to_x_communities">Bu etkinlik %s toplulukla bağlantılı</string>
+    <string name="participants">Katılımcılar</string>
+    <string name="participation_requests">Katılım İstekleri</string>
+    <string name="no_request_yet">Henüz istek yok</string>
+    <string name="participated">Katıldı</string>
+    <string name="sign_in_to_see_events">Etkinliklerinizi görmek için giriş yapın</string>
+    <string name="past">Geçmiş</string>
+    <string name="upcoming">Yaklaşan</string>
+    <string name="your_event">Senin Etkinliğin</string>
+    <string name="create_event">Etlinlik Oluştur</string>
+    <string name="linked_community_limit_reached">En fazla 5 adet topluluk seçebilirsiniz</string>
+    <string name="no_membered_communities">Üyesi olduğun bir topluluk yok</string>
+    <string name="event_creation_restricted_community_warning_message">Bu toplulukta yalnızca yönetici ve moderatörler etkinlik oluşturabilir</string>
+    <string name="restricted">Kısıtlanmış</string>
+    <string name="added">Eklendi</string>
+    <string name="add">Ekle</string>
+    <string name="event_type">Etkinlik Türü</string>
+    <string name="event_description">Etkinlik Açıklaması</string>
+    <string name="limit_number_of_participants">Katılımcı sayısını sınırla</string>
+    <string name="participation_settings">Katılım Ayarları</string>
+    <string name="participation_settings_description">İnsanların etkinliğinize nasıl katılabilieceğini seçebilirsiniz.</string>
+    <string name="date_and_address_visibility">Tarih ve Adres Görünürlüğü</string>
+    <string name="date_and_address_visibility_description">Etkinliğinizin tarih ve adres açıklamasını haritada kimlerin görebileceğini seçebilirsiniz</string>
+    <string name="address_description">Adres Açıklaması</string>
+    <string name="select">Seç</string>
+    <string name="title">Başlık</string>
+    <string name="date">Tarih</string>
+    <string name="time">Saat</string>
+    <string name="no_events_found_that_match_your_criteria">Arama kriterlerinize uygun etkinlik bulunamadı.</string>
+    <string name="search_events_in_this_region">Bu Bölgede Etkinlik Arayın</string>
+    <string name="select_location_by_dragging_the_map">Haritayı Sürükleyerek Konum Seçin</string>
+    <string name="only_public_events">Yalnızca Herkese Açık Etkinlikler</string>
+    <string name="date_range">Tarih Aralığı</string>
+    <string name="select_date_range">Tarih Aralığı Belirle</string>
+    <string name="clear">Temizle</string>
+    <string name="start_date">Tarih Başlangıcı</string>
+    <string name="end_date">Tarih Bitişi</string>
+    <string name="_private">Gizli</string>
+    <string name="private_address">Gizli Adres</string>
+    <string name="verified_with_google">Google ile Doğrulandı</string>
+    <string name="verified_with_email">E-Posta ile Doğrulandı</string>
+    <string name="unverified_account">Doğrulanmamış Hesap</string>
+    <string name="verify_with_email">E-posta ile doğrulayın</string>
+    <string name="sending_verification_link_dialog_text">E-postanıza bir doğrulama bağlantısı gönderdik. Lütfen e-postanızı kontrol edin ve hesabınızı doğrulayın</string>
+    <string name="real_name_optional">Gerçek İsim (İsteğe Bağlı)</string>
+    <string name="cannot_change_email_because_of_signing_in_with_google">Google ile oturum açtığınız için e-postanızı değiştiremezsiniz</string>
+    <string name="phone_number_optional">Telefon Numarası (İsteğe Bağlı)</string>
+    <string name="change_profile_picture">Profil Resminizi Değiştiriz</string>
+    <string name="remove_profile_picture">Profil Resminizi Kaldırın</string>
+    <string name="upload_profile_picture">Bir Profil Resmi Yükleyin</string>
+    <string name="change_password">Şifreyi Değiştirin</string>
+    <string name="birth_date">Doğum Tarihi</string>
+    <string name="gender">Cinsiyet</string>
+    <string name="email_address">E-Posta Adresi</string>
+    <string name="username_cannot_be_empty">Kullanıcı adı boş olamaz</string>
+    <string name="username_already_used">Bu kullanıcı adı kullanılıyor</string>
+    <string name="change_email_address">E-Posta Adresini Değiştir</string>
+    <string name="we_sent_a_verification_link">Yeni e-posta adresinize bir doğrulama bağlantısı gönderdik. Doğrulamadan sonra e-posta adresinizi değiştirebilirsiniz.</string>
+    <string name="confirm">Onayla</string>
+    <string name="password_cannot_be_empty">Şifre boş olamaz</string>
+    <string name="email_cannot_be_empty">E-posta boş olamaz</string>
+    <string name="new_email_address">Yeni E-Posta Adresi</string>
+    <string name="password_changed_successfully">Şifre başarıyla değiştirildi</string>
+    <string name="wrong_password_please_check_it">Yanlış şifre, lütfen kontrol edin</string>
+    <string name="sending_changing_password_link_dialog_text">Şifreni değiştirmen için e-posta adresine bir bağlantı göndereceğiz.</string>
+    <string name="email_not_found">E-posta bulunamadı</string>
+    <string name="link_sent_check_email">Bağlantı gönderildi. Lütfen e-postanızı kontrol edin</string>
+    <string name="current_password">Şu Anki Şifre</string>
+    <string name="new_password">Yeni Şifre</string>
+    <string name="new_password_again">Yeni Şifre (Tekrar)</string>
+    <string name="sign_in_to_see_upcoming_events">Yaklaşan etkinliklerinizi görmek için giriş yapın</string>
+    <string name="how">Nasıl?</string>
+    <string name="who_organizes">Kim organize ediyor?</string>
+    <string name="which_communities_are_linked">Hangi topluluklarla bağlantılı?</string>
+    <string name="where">Nerede?</string>
+    <string name="send_request_to_participate">Katılım İsteği Gönder</string>
+    <string name="great">Harika</string>
+    <string name="congrats">Tebrikler</string>
+    <string name="you_won_x_y">%d %s kazandın</string>
+    <string name="you_have_x_ticket_section_two">&#160;biletin var.</string>
+    <string name="your_ticket_will_be_refunded">İsteğiniz reddedilirse biletiniz iade edilecektir.</string>
+    <string name="your_are_participating">Katılıyorsun</string>
+    <string name="participate">Katıl</string>
+    <string name="to_see_date_participate_event">Tarihi görmek için etkinliğe katılmalısın</string>
+    <string name="to_see_address_participate_event">Adresi görmek için etkinliğe katılmalısın</string>
+    <string name="x_linked_community">%d bağlantılı topluluk</string>
+    <string name="show">Göster</string>
+    <string name="purchase_successful">Satın alım için teşekkürler</string>
+    <string name="reward_could_not_be_received_dialog_title">Ödül alınamadı</string>
+    <string name="reward_could_not_be_received_dialog_text">Ödül alınırken hata oluştu, lütfen tekrar deneyin.</string>
+    <string name="need_to_watch_until_end">Ödülü alabilmek için reklamı sonuna kadar izlemelisiniz</string>
+    <string name="ad_could_not_be_loaded">Reklam yüklenemedi</string>
+    <string name="failed_to_show_ad_dialog_text">Reklam yüklenirken bir sorun oluştu, lütfen daha sonra tekrar deneyin.</string>
+    <string name="you_have_x_ticket_section_one"></string>
+    <string name="you_want_more">Daha fazla ister misin?</string>
+    <string name="watch_an_ads">Bir Reklam İzle</string>
+    <string name="or">ya da</string>
+    <string name="ticket_info">• Bir etkinlik veya topluluk oluşturmanın bedeli 3 bilettir.\n• Bir etkinliğe veya topluluğa katılmanın bedeli 2 bilettir.\n• Bir etkinliği düzenlemenin bedeli 1 bilettir.</string>
+    <string name="account_tab_supporting_content">Hesap Bilgileri • Biletlerim</string>
+    <string name="app_settings_tab_supporting_content">Tema • Dil</string>
+    <string name="system_default">Sistem Varsayılanı</string>
+    <string name="dark">Karanlık</string>
+    <string name="light">Aydınlık</string>
+    <string name="event">Etkinlik</string>
+    <string name="language">Dil</string>
+    <string name="turkish">Türkçe</string>
+    <string name="english">İngilizce</string>
+    <string name="x_members">%s üye</string>
+    <string name="x_events">%s etkinlik</string>
+    <string name="post_confirm">Paylaş</string>
+    <string name="admin_changed">Yönetici değiştirildi</string>
+    <string name="post_created">Gönderi paylaşıldı</string>
+    <string name="popular_communities">Popüler Topluluklar</string>
+    <string name="new_event_in_community_notification_channel_name">New Event in Community</string>
+    <string name="x_day_ago">%dg önce</string>
+    <string name="now">şimdi</string>
+    <string name="x_hours_ago">%ds önce</string>
+    <string name="x_minutes_ago">%dd önce</string>
+    <string name="x_days_left">%dg kaldı</string>
+    <string name="x_hours_left">%ds kaldı</string>
+    <string name="x_minutes_left">%dd kaldı</string>
+    <string name="ticket">Bilet</string>
+    <string name="purchase_canceled">Satın Alma İptal Edildi</string>
+    <string name="x_tickets">%d Bilet</string>
+    <string name="x_has_been_loaded_to_your_account">%s hesabınıza yüklendi.</string>
+    <string name="read_and_accept_terms_of_service_append_one"></string>
+    <string name="read_and_accept_terms_of_service_append_two">\'nı okudum ve onaylıyorum.</string>
+    <string name="terms_of_service_label">Hizmet Koşulları</string>
+    <string name="read_and_accept_privacy_policy_append_one"></string>
+    <string name="privacy_policy_label">Gizlilik Politikası</string>
+    <string name="read_and_accept_privacy_policy_append_two">\'nı okudum ve onaylıyorum.</string>
+    <string name="support_and_feedback">Destek ve Geri Bildirim</string>
+    <string name="send">Gönder</string>
+    <string name="subject">Konu…</string>
+    <string name="your_message">Mesajınız</string>
+    <string name="feedback_send_error">Mesajınız şu anda gönderilemiyor. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="message_sent">Mesaj Gönderildi</string>
+    <string name="your_feedback_or_support_message_has_been_sent">Mesajınızı dikkatle inceleyecek ve en kısa sürede \'%s\' adresinize dönüş yapacağız. Bindle\'ı geliştirmemize katkıda bulunduğunuz için teşekkür ederiz!</string>
+    <string name="participant_limit_cannot_be_one">Geçersiz katılımcı sınırı</string>
+    <string name="cannot_edit_past_events">Geçmiş etkinlikler düzenlenemez</string>
+    <string name="delete_account">Hesabı Sil</string>
+    <string name="are_you_sure_you_want_to_delete_your_account">Hesabını kalıcı olarak silmek istediğinden emin misin?</string>
+    <string name="delete_account_dialog_text">Satın alımların ve verilerin kalıcı olarak kaybolacak. Bu işlem geri alınamaz.</string>
+    <string name="report">Şikayet Et</string>
+    <string name="report_the_post">Gönderiyi Şikayet Et</string>
+    <string name="violation">İhlal</string>
+    <string name="sexual_content_or_nudity">Cinsel İçerik ya da Çıplaklık</string>
+    <string name="something_else">Başka Bir Şey</string>
+    <string name="violence">Şiddet</string>
+    <string name="please_select_one">Lütfen birini seçin</string>
+    <string name="optional_description">Açıklama (İsteğe Bağlı)</string>
+    <string name="report_sent">Şikayetiniz gönderildi</string>
+    <string name="are_you_sure_you_want_to_delete_the_post">Gönderiyi silmek istediğine emin misin?</string>
+    <string name="delete">Sil</string>
+    <string name="child_abuse_or_illegal_content">Çocuk İstismarı veya Yasa Dışı İçerik</string>
+    <string name="disruptive_behavior_or_harassment">Rahatsız Edici Davranış veya Taciz</string>
+    <string name="report_the_user">Kullanıcıyı Şikayet Et</string>
+    <string name="ticket_dialog_info_button_text">Click here to get information about tickets and see what to consider when purchasing.</string>
+    <string name="costs">Maliyetler</string>
+    <string name="creation_of_event_or_community">Etkinlik ya da topluluk oluşturma</string>
+    <string name="participation_of_event_or_community">Bir etkinliğe ya da topluluğa katılma</string>
+    <string name="changing_information_of_event">Bir etkinliğin bilgilerini değiştirme</string>
+    <string name="verify">Doğrula</string>
+    <string name="wrong_password">Yanlış şifre</string>
+    <string name="comments_are_disabled">Yorumlar devre dışı</string>
+    <string name="location_permission_rationale">Yakınınızdaki etkinlikleri görebilmeniz için konum bilginize ihtiyacımız vardır. Konum bilginiz kimseyle paylaşılmaz.</string>
+    <string name="permission_settings">İzin Ayarları</string>
+    <string name="media_permission_rationale">Resim yükleyebilmek için lütfen medya izni veriniz.</string>
+    <string name="user_does_not_exist">Kullanıcı mevcut değil</string>
+    <string name="event_does_not_exist">Etkinlik artık mevcut değil</string>
+</resources>

@@ -1,11 +1,11 @@
 package com.klavs.bindle.uix.view.communities.communityPage
 
 import android.Manifest
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.view.Gravity
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,111 +23,136 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.RotateRight
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.outlined.AddModerator
+import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Celebration
-import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.icons.outlined.PersonAddAlt1
 import androidx.compose.material.icons.outlined.RemoveModerator
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.rounded.AddAPhoto
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Groups
-import androidx.compose.material.icons.rounded.ModeEdit
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.PersonRemove
 import androidx.compose.material.icons.rounded.PostAdd
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions.withCrossFade
+import com.bumptech.glide.request.RequestOptions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.google.firebase.auth.FirebaseUser
-import com.klavs.bindle.data.entity.BottomNavItem
-import com.klavs.bindle.data.entity.Community
-import com.klavs.bindle.data.entity.CommunityRoles
-import com.klavs.bindle.data.entity.JoinedCommunities
-import com.klavs.bindle.data.entity.JoiningRequestForCommunity
-import com.klavs.bindle.data.entity.Member
+import com.klavs.bindle.R
+import com.klavs.bindle.data.entity.community.Community
+import com.klavs.bindle.data.entity.sealedclasses.CommunityRoles
+import com.klavs.bindle.data.entity.Event
+import com.klavs.bindle.data.entity.Post
+import com.klavs.bindle.data.entity.PostComment
+import com.klavs.bindle.data.entity.User
 import com.klavs.bindle.resource.Resource
-import com.klavs.bindle.ui.theme.Green1
-import com.klavs.bindle.ui.theme.Orange2
-import com.klavs.bindle.uix.view.auth.convertMillisToDate
-import com.klavs.bindle.uix.view.communities.roleNameFromRoleValue
+import com.klavs.bindle.uix.view.communities.communityPage.bottomsheets.MembersBottomSheet
+import com.klavs.bindle.uix.view.communities.communityPage.bottomsheets.RequestsBottomSheet
+import com.klavs.bindle.uix.view.communities.communityPage.bottomsheets.SettingsBottomSheet
+import com.klavs.bindle.uix.view.communities.communityPage.bottomsheets.UpdateCommunityNameOrDescriptionBottomSheet
+import com.klavs.bindle.util.EventBottomSheet
+import com.klavs.bindle.uix.viewmodel.NavHostViewModel
 import com.klavs.bindle.uix.viewmodel.communities.CommunityPageViewModel
+import com.klavs.bindle.uix.viewmodel.communities.PostViewModel
+import com.klavs.bindle.util.TicketDialog
+import com.klavs.bindle.util.UnverifiedAccountAlertDialog
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CommunityPage(
     navController: NavHostController,
     communityId: String,
-    viewModel: CommunityPageViewModel = hiltViewModel()
+    vmPost: PostViewModel,
+    currentUser: FirebaseUser?,
+    navHostViewModel: NavHostViewModel,
+    viewModel: CommunityPageViewModel
 ) {
-    BackHandler {
-        navController.navigate(BottomNavItem.Communities.route) {
-            popUpTo(0) {
-                inclusive = true
-            }
-        }
-    }
-
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     val community by viewModel.community.collectAsState()
-    val currentUser by viewModel.currentUser.collectAsState()
     val rolePriority by viewModel.userRolePriority.collectAsState()
-    val amIMember by viewModel.amIMember.collectAsState()
+    val didISendRequest by viewModel.didISendRequest.collectAsState()
+    val userResource by navHostViewModel.userResourceFlow.collectAsState()
 
     LaunchedEffect(rolePriority) {
         if (rolePriority != CommunityRoles.Member.rolePriority) {
@@ -136,79 +160,152 @@ fun CommunityPage(
         }
     }
 
-    var kickedAlert by remember { mutableStateOf(false) }
-    if (kickedAlert) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .zIndex(10f)
-        ) {
-            AlertDialog(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.WarningAmber,
-                        contentDescription = "you have been kicked"
-                    )
-                },
-                title = { Text("You are not member of this community anymore") },
-                text = { Text("You have been kicked from this community or you leaved this community.") },
-                properties = DialogProperties(
-                    dismissOnBackPress = false,
-                    dismissOnClickOutside = false
-                ),
-                onDismissRequest = {
-                    navController.navigate(BottomNavItem.Communities.route) {
-                        popUpTo(0) {
-                            inclusive = true
+    var firstRolePriorityEffectHasLaunched by remember { mutableStateOf(false) }
+    var secondRolePriorityEffectHasLaunched by remember { mutableStateOf(false) }
+    LaunchedEffect(rolePriority) {
+        if (firstRolePriorityEffectHasLaunched) {
+            if (secondRolePriorityEffectHasLaunched) {
+                if (viewModel.leaveCommunityState.value !is Resource.Success) {
+                    when (rolePriority) {
+                        CommunityRoles.Moderator.rolePriority -> {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.you_are_now_moderator)
+                                )
+                            }
                         }
+
+                        CommunityRoles.Admin.rolePriority -> {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.you_are_now_admin)
+                                )
+                            }
+                        }
+
+                        CommunityRoles.Member.rolePriority -> {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.you_are_now_member)
+                                )
+                            }
+                        }
+
                     }
-                }, confirmButton = {
-                    ElevatedButton(
-                        onClick = { navController.popBackStack() }
-                    ) {
-                        Text("Okay")
-                    }
-                })
+                }
+            } else {
+                secondRolePriorityEffectHasLaunched = true
+            }
+        } else {
+            firstRolePriorityEffectHasLaunched = true
         }
     }
 
-    LaunchedEffect(amIMember) {
-        if (!amIMember) {
-            kickedAlert = true
+    LaunchedEffect(viewModel.changeAdminState.value) {
+        when (viewModel.changeAdminState.value) {
+            is Resource.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(viewModel.changeAdminState.value.messageResource?.let {
+                        context.getString(
+                            it
+                        )
+                    } ?: "")
+                }
+            }
+
+            is Resource.Success -> {
+                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.admin_changed)) }
+            }
+
+            else -> {}
         }
     }
 
     LaunchedEffect(true) {
-        viewModel.getCommunity(communityId)
-        viewModel.listenToMyStatus(communityId)
+        if (community !is Resource.Success) {
+            viewModel.listenToCommunity(communityId)
+            viewModel.getNumOfMembers(communityId)
+            viewModel.getNumOfEvents(communityId)
+        }
+
+        if (viewModel.myStatusJob == null && currentUser != null) {
+            viewModel.listenToMyStatus(
+                communityId,
+                myUid = currentUser.uid
+            )
+        }
+
     }
+
+    LaunchedEffect(viewModel.leaveCommunityState.value) {
+        when (viewModel.leaveCommunityState.value) {
+            is Resource.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(viewModel.leaveCommunityState.value.messageResource?.let {
+                        context.getString(
+                            it
+                        )
+                    } ?: "")
+                }
+                viewModel.leaveCommunityState.value = Resource.Idle()
+            }
+
+            is Resource.Success -> {
+                viewModel.leaveCommunityState.value = Resource.Idle()
+            }
+
+            else -> {}
+        }
+    }
+
     DisposableEffect(true) {
         onDispose {
-            viewModel.currentUserJob?.cancel()
-            viewModel.communityJob?.cancel()
             viewModel.myStatusJob?.cancel()
+            viewModel.stopListeningToDidISendRequest()
         }
     }
     when (community) {
         is Resource.Error -> {
-            val toast = Toast.makeText(
-                navController.context,
-                "Community can not be loaded, please try later",
-                Toast.LENGTH_LONG
-            )
-            toast.setGravity(Gravity.CENTER, 0, 0)
-            toast.show()
-            navController.navigate(BottomNavItem.Communities.route) {
-                popUpTo(0) {
-                    inclusive = true
+            Scaffold(topBar = {
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { navController.popBackStack() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = "go back"
+                            )
+                        }
+                    }
+                )
+            }) { innerPadding ->
+                Box(
+                    Modifier
+                        .padding(top = innerPadding.calculateTopPadding())
+                        .fillMaxSize()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.ErrorOutline,
+                            contentDescription = "community has been deleted"
+                        )
+                        Text(community.messageResource?.let { stringResource(it) } ?: "")
+                    }
                 }
             }
+
         }
 
         is Resource.Idle -> {}
         is Resource.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularWavyProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
 
@@ -216,44 +313,82 @@ fun CommunityPage(
             Content(
                 community = community.data!!,
                 navController = navController,
-                rolePriority = rolePriority
+                currentUser = currentUser,
+                rolePriority = rolePriority,
+                vmPost = vmPost,
+                viewModel = viewModel,
+                navHostViewModel = navHostViewModel,
+                didISendRequest = didISendRequest,
+                scope = scope,
+                snackbarHostState = snackbarHostState,
+                userResource = userResource
             )
         }
     }
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun Content(
     community: Community,
-    rolePriority: Int,
-    viewModel: CommunityPageViewModel = hiltViewModel(),
+    rolePriority: Int?,
+    currentUser: FirebaseUser?,
+    vmPost: PostViewModel,
+    didISendRequest: Boolean?,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    userResource: Resource<User>,
+    navHostViewModel: NavHostViewModel,
+    viewModel: CommunityPageViewModel,
     navController: NavHostController
 ) {
+    val eventBottomSheetState = rememberModalBottomSheetState()
+    var showEventBottomSheet by remember { mutableStateOf<Event?>(null) }
     var showMembersBottomSheet by remember { mutableStateOf(false) }
     val membersBottomSheetState = rememberModalBottomSheetState()
     var showRequestsBottomSheet by remember { mutableStateOf(false) }
     val requestsBottomSheetState = rememberModalBottomSheetState()
+    var showSettingsBottomSheet by remember { mutableStateOf(false) }
+    val settingsBottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    var showTicketDialog by remember { mutableStateOf(false) }
     var commentsForPost by remember { mutableStateOf<String?>(null) }
     val commentsBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    val updateNameOrDescriptionBottomSheetState = rememberModalBottomSheetState()
+    var updateNameOrDescriptionBottomSheetValue by remember {
+        mutableStateOf<Pair<Boolean, String>?>(
+            null
+        )
+    }
+    val context = LocalContext.current
     var userToRemove by remember { mutableStateOf<String?>(null) }
     var userToBeModerator by remember { mutableStateOf<String?>(null) }
     var userToBeRemovedFromModerator by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
+    var userToBeAdmin by remember { mutableStateOf<String?>(null) }
     val numberOfMembers by viewModel.numberOfMembers.collectAsState()
     val numberOfRequests by viewModel.numberOfRequests.collectAsState()
-    val numOfActiveEvents by viewModel.numOfActiveEvents.collectAsState()
-    var openShareDialog by remember { mutableStateOf(false) }
+    val numOfEvents by viewModel.numOfEvents.collectAsState()
+    var openSharingDialog by remember { mutableStateOf(false) }
+    var openLeavingDialog by remember { mutableStateOf(false) }
+    var reportDialog by remember { mutableStateOf<Post?>(null) }
+    var reportUserDialog by remember { mutableStateOf<PostComment?>(null) }
+    var showDeleteCommunityDialog by remember { mutableStateOf(false) }
+    var showUnverifiedAccountAlertDialog by remember { mutableStateOf(false) }
+    val userResourceFlow by navHostViewModel.userResourceFlow.collectAsState()
 
-
-
-
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
-            if (!community.onlyAdminsCanCreatePost || rolePriority != CommunityRoles.Member.rolePriority) {
+            if ((!community.postSharingRestriction || rolePriority != CommunityRoles.Member.rolePriority) && (rolePriority != null && currentUser != null)) {
+                Log.d("communityPage", "rolePriorityin community page: $rolePriority")
                 FloatingActionButton(
                     onClick = {
                         navController.navigate("createPost/${community.id}")
@@ -266,7 +401,7 @@ private fun Content(
                             modifier = Modifier.padding(start = 5.dp)
                         )
                         Text(
-                            "Create Post",
+                            stringResource(R.string.create_post),
                             modifier = Modifier.padding(horizontal = 5.dp)
                         )
                     }
@@ -275,91 +410,129 @@ private fun Content(
         },
         topBar = {
             TopAppBar(
+                scrollBehavior = scrollBehavior,
                 actions = {
-                    if (rolePriority != CommunityRoles.Member.rolePriority) {
-                        BadgedBox(
-                            badge = {
-                                if (numberOfRequests is Resource.Success && numberOfRequests.data!! > 0) {
-                                    Badge {
-                                        Text(
-                                            text = if (numberOfRequests.data!! > 99) "99+"
-                                            else numberOfRequests.data.toString()
-                                        )
+                    if (rolePriority != null) {
+                        if (rolePriority != CommunityRoles.Member.rolePriority) {
+                            BadgedBox(
+                                badge = {
+                                    if ((numberOfRequests ?: 0) > 0) {
+                                        Badge {
+                                            Text(
+                                                text = if ((numberOfRequests ?: 0) > 99) "99+"
+                                                else numberOfRequests.toString()
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    showRequestsBottomSheet = true
-                                    viewModel.getRequestsWithPaging(
-                                        communityId = community.id!!,
-                                        pageSize = 10
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        showRequestsBottomSheet = true
+                                        viewModel.getRequestsWithPaging(
+                                            communityId = community.id,
+                                            pageSize = 10
+                                        )
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.PersonAdd,
+                                        contentDescription = "joining requests"
                                     )
                                 }
+                            }
+                            IconButton(
+                                onClick = { showSettingsBottomSheet = true }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.PersonAdd,
-                                    contentDescription = "joining requests"
+                                    imageVector = Icons.Rounded.Settings,
+                                    contentDescription = "settings"
                                 )
                             }
                         }
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.ModeEdit,
-                                contentDescription = "edit"
-                            )
-                        }
-                    }
-                    Box {
-                        var expanded by remember { mutableStateOf(false) }
-                        IconButton(
-                            onClick = {
-                                expanded = !expanded
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "menu"
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                leadingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Outlined.PersonAddAlt1,
-                                        contentDescription = "share"
-                                    )
-                                },
-                                text = {
-                                    Text(
-                                        text = "Invite people",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                },
+                        Box {
+                            var expanded by remember { mutableStateOf(false) }
+                            IconButton(
                                 onClick = {
-                                    openShareDialog = true
-                                    expanded = false
+                                    expanded = !expanded
                                 }
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MoreVert,
+                                    contentDescription = "menu"
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Outlined.PersonAddAlt1,
+                                            contentDescription = "share"
+                                        )
+                                    },
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.invite_people),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    },
+                                    onClick = {
+                                        openSharingDialog = true
+                                        expanded = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                                            contentDescription = "leave the community"
+                                        )
+                                    },
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.leave_the_community),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    },
+                                    onClick = {
+                                        openLeavingDialog = true
+                                        expanded = false
+                                    }
+                                )
+                                if (rolePriority == CommunityRoles.Admin.rolePriority) {
+                                    DropdownMenuItem(
+                                        leadingIcon = {
+                                            Icon(
+                                                imageVector = Icons.Rounded.DeleteOutline,
+                                                contentDescription = "delete the community",
+                                                tint = MaterialTheme.colorScheme.error
+                                            )
+                                        },
+                                        text = {
+                                            Text(
+                                                text = stringResource(R.string.delete_the_community),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        },
+                                        onClick = {
+                                            showDeleteCommunityDialog = true
+                                            expanded = false
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
-
 
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigate(BottomNavItem.Communities.route) {
-                                popUpTo(0) {
-                                    inclusive = true
-                                }
-                            }
+                            navController.popBackStack()
                         }
                     ) {
                         Icon(
@@ -370,7 +543,7 @@ private fun Content(
                 },
                 title = {
                     Text(
-                        text = "Community Page",
+                        text = stringResource(R.string.community_page),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -382,33 +555,465 @@ private fun Content(
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
         ) {
-            if (openShareDialog) {
-                ShareDialog(communityId = community.id!!) { openShareDialog = false }
+            if (reportUserDialog != null) {
+                var selectedContent by remember { mutableStateOf<Int?>(null) }
+                var optionalDescription by remember { mutableStateOf("") }
+                val messageLimit = 100
+                Dialog(onDismissRequest = { reportUserDialog = null }) {
+                    Card {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.report_the_user),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(10.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                stringResource(R.string.please_select_one) + ":",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .align(Alignment.Start)
+                            )
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 0 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.child_abuse_or_illegal_content),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 0) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "sexual content"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider()
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 1 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.disruptive_behavior_or_harassment),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 1) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "violence"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider()
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 2 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.something_else),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 2) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "something else"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider(
+                                thickness = 3.dp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.2f)
+                                    .clip(CircleShape)
+                            )
+                            TextField(
+                                label = {
+                                    Text(
+                                        stringResource(R.string.optional_description),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                value = optionalDescription,
+                                minLines = 1,
+                                modifier = Modifier.fillMaxWidth(0.9f),
+                                supportingText = {
+                                    Text("$messageLimit/${optionalDescription.length}")
+                                },
+                                maxLines = 4,
+                                textStyle = TextStyle(
+                                    fontStyle = MaterialTheme.typography.bodyMedium.fontStyle,
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                ),
+                                onValueChange = {
+                                    if (it.length <= messageLimit) {
+                                        optionalDescription = it
+                                    }
+                                }
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                IconButton(
+                                    onClick = { reportUserDialog = null }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                        contentDescription = "back"
+                                    )
+                                }
+                                OutlinedButton(
+                                    enabled = selectedContent != null,
+                                    onClick = {
+                                        if (currentUser != null) {
+                                            vmPost.sendUserReport(
+                                                reportedUser = reportUserDialog!!.senderUid,
+                                                uid = currentUser.uid,
+                                                reportType = selectedContent!!,
+                                                description = optionalDescription,
+                                                messageId = reportUserDialog!!.id,
+                                                messageContent = reportUserDialog!!.commentText
+                                            )
+                                        }
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(
+                                                context.getString(R.string.report_sent)
+                                            )
+                                        }
+                                        reportUserDialog = null
+                                    }
+                                ) {
+                                    Text(stringResource(R.string.send))
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Send,
+                                        contentDescription = "send",
+                                        modifier = Modifier
+                                            .padding(start = 4.dp)
+                                            .size(IconButtonDefaults.xSmallIconSize)
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            if (reportDialog != null) {
+                var selectedContent by remember { mutableStateOf<Int?>(null) }
+                var optionalMessage by remember { mutableStateOf("") }
+                val messageLimit = 100
+                Dialog(onDismissRequest = { reportDialog = null }) {
+                    Card {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                stringResource(R.string.report_the_post),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(10.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                stringResource(R.string.please_select_one) + ":",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .align(Alignment.Start)
+                            )
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 0 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.sexual_content_or_nudity),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 0) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "sexual content"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider()
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 1 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.violence),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 1) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "violence"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider()
+                            ListItem(
+                                modifier = Modifier.clickable { selectedContent = 2 },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                headlineContent = {
+                                    Text(
+                                        stringResource(R.string.something_else),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                trailingContent = {
+                                    if (selectedContent == 2) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Check,
+                                            contentDescription = "something else"
+                                        )
+                                    }
+                                }
+                            )
+                            HorizontalDivider(
+                                thickness = 3.dp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .fillMaxWidth(0.2f)
+                                    .clip(CircleShape)
+                            )
+                            TextField(
+                                label = {
+                                    Text(
+                                        stringResource(R.string.optional_description),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                },
+                                value = optionalMessage,
+                                minLines = 1,
+                                modifier = Modifier.fillMaxWidth(0.9f),
+                                supportingText = {
+                                    Text("$messageLimit/${optionalMessage.length}")
+                                },
+                                maxLines = 4,
+                                textStyle = TextStyle(
+                                    fontStyle = MaterialTheme.typography.bodyMedium.fontStyle,
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                ),
+                                onValueChange = {
+                                    if (it.length <= messageLimit) {
+                                        optionalMessage = it
+                                    }
+                                }
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                IconButton(
+                                    onClick = { reportDialog = null }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                        contentDescription = "back"
+                                    )
+                                }
+                                OutlinedButton(
+                                    enabled = selectedContent != null,
+                                    onClick = {
+                                        if (currentUser != null) {
+                                            vmPost.sendReport(
+                                                description = optionalMessage,
+                                                postId = reportDialog!!.id,
+                                                postOwnerUid = reportDialog!!.uid,
+                                                uid = currentUser.uid,
+                                                reportType = selectedContent!!
+                                            )
+
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar(
+                                                    context.getString(R.string.report_sent)
+                                                )
+                                            }
+                                        }
+                                        reportDialog = null
+                                    }
+                                ) {
+                                    Text(stringResource(R.string.send))
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.Send,
+                                        contentDescription = "send",
+                                        modifier = Modifier
+                                            .padding(start = 4.dp)
+                                            .size(IconButtonDefaults.xSmallIconSize)
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            if (showDeleteCommunityDialog) {
+                AlertDialog(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Rounded.WarningAmber,
+                            contentDescription = "warning"
+                        )
+                    },
+                    text = {
+                        Text(stringResource(R.string.delete_the_community_alert_dialog_text))
+                    },
+                    confirmButton = {
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                            ),
+                            onClick = {
+                                community.id.let {
+                                    if (currentUser != null) {
+                                        viewModel.deleteTheCommunity(
+                                            communityId = it
+                                        )
+                                    }
+                                }
+                                showDeleteCommunityDialog = false
+                            }
+                        ) {
+                            Text(stringResource(R.string.delete_the_community))
+                        }
+                    },
+                    dismissButton = {
+                        IconButton(
+                            modifier = Modifier.padding(end = 15.dp),
+                            onClick = { showDeleteCommunityDialog = false }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = "cancel"
+                            )
+                        }
+                    },
+                    onDismissRequest = { showDeleteCommunityDialog = false }
+                )
+            }
+            if (showTicketDialog) {
+                if (userResourceFlow is Resource.Success) {
+                    if (currentUser != null) {
+                        TicketDialog(
+                            onDismiss = { showTicketDialog = false },
+                            uid = currentUser.uid,
+                            tickets = userResourceFlow.data!!.tickets,
+                            paddingValues = innerPadding
+                        )
+                    } else {
+                        showTicketDialog = false
+                    }
+                } else {
+                    showTicketDialog = false
+                }
+            }
+            if (showUnverifiedAccountAlertDialog) {
+                UnverifiedAccountAlertDialog(
+                    onDismiss = { showUnverifiedAccountAlertDialog = false }
+                ) {
+                    navController.navigate("menu_profile")
+                }
+            }
+            if (openSharingDialog) {
+                ShareDialog(communityId = community.id) { openSharingDialog = false }
+            }
+            if (openLeavingDialog) {
+                LeavingDialog(
+                    userRolePriority = rolePriority,
+                    onConfirm = {
+                        if (currentUser != null) {
+                            viewModel.leaveTheCommunity(
+                                communityId = community.id,
+                                myUid = currentUser.uid
+                            )
+                        }
+                        openLeavingDialog = false
+                    }) {
+                    openLeavingDialog = false
+                }
             }
             if (userToRemove != null) {
                 RemoveMemberDialog(
-                    uid = userToRemove!!,
-                    communityId = community.id!!
+                    onConfirm = {
+                        viewModel.removeMember(communityId = community.id, uid = userToRemove!!)
+                        userToRemove = null
+                    }
                 ) { userToRemove = null }
             }
             if (userToBeModerator != null) {
                 PromoteDialog(
-                    uid = userToBeModerator!!,
-                    communityId = community.id!!
+                    onConfirm = {
+                        viewModel.promoteMember(
+                            communityId = community.id,
+                            uid = userToBeModerator!!
+                        )
+                        userToBeModerator = null
+                    }
                 ) { userToBeModerator = null }
             }
             if (userToBeRemovedFromModerator != null) {
                 DemoteDialog(
-                    uid = userToBeRemovedFromModerator!!,
-                    communityId = community.id!!
+                    onConfirm = {
+                        viewModel.demoteMember(
+                            communityId = community.id,
+                            uid = userToBeRemovedFromModerator!!
+                        )
+                        userToBeRemovedFromModerator = null
+                    }
                 ) { userToBeRemovedFromModerator = null }
             }
-            if (showMembersBottomSheet) {
+            if (userToBeAdmin != null) {
+                if (currentUser != null) {
+                    MakeAdminDialog(
+                        onConfirm = {
+                            viewModel.changeAdmin(
+                                communityId = community.id, uid = userToBeAdmin!!,
+                                myUid = currentUser.uid
+                            )
+                            userToBeAdmin = null
+                        },
+                    ) { userToBeAdmin = null }
+                }
+            }
+            if (showMembersBottomSheet && rolePriority != null) {
                 MembersBottomSheet(
                     state = membersBottomSheetState,
                     userRole = rolePriority,
-                    numOfMembers = numberOfMembers.data,
-                    communityId = community.id!!,
+                    numOfMembers = numberOfMembers,
+                    communityId = community.id,
                     onDismiss = {
                         scope.launch { membersBottomSheetState.hide() }.invokeOnCompletion {
                             if (!membersBottomSheetState.isVisible) {
@@ -423,22 +1028,79 @@ private fun Content(
                     },
                     onDeleteUser = { userToRemove = it },
                     onAddModeratorUser = { userToBeModerator = it },
-                    onRemoveModeratorUser = { userToBeRemovedFromModerator = it }
+                    onRemoveModeratorUser = { userToBeRemovedFromModerator = it },
+                    onMakeAdminUser = { userToBeAdmin = it },
+                    viewModel = viewModel
                 )
             }
-            if (commentsForPost != null) {
-                CommentsBottomSheet(
-                    state = commentsBottomSheetState,
-                    communityId = community.id!!,
-                    postId = commentsForPost!!,
-                    onDismiss = { commentsForPost = null }
+            if (showEventBottomSheet != null) {
+                if (currentUser != null) {
+                    EventBottomSheet(
+                        onDismiss = {
+                            showEventBottomSheet = null
+                        },
+                        sheetState = eventBottomSheetState,
+                        context = LocalContext.current,
+                        onCommunityClick = { navController.navigate("community_page/$it") },
+                        currentUser = currentUser,
+                        event = showEventBottomSheet!!,
+                        navHostViewModel = navHostViewModel,
+                        showTicketDialog = { showTicketDialog = true },
+                        showUnverifiedAccountAlertDialog = {
+                            showUnverifiedAccountAlertDialog = true
+                        },
+                        navigateToEventPage = {
+                            navController.navigate("event_page/${showEventBottomSheet!!.id}")
+                        },
+                        onLogInClick = { navController.navigate("log_in") }
+                    )
+                }
+            }
+            if (updateNameOrDescriptionBottomSheetValue != null) {
+                UpdateCommunityNameOrDescriptionBottomSheet(
+                    isName = updateNameOrDescriptionBottomSheetValue!!.first,
+                    state = updateNameOrDescriptionBottomSheetState,
+                    value = updateNameOrDescriptionBottomSheetValue!!.second,
+                    onNameChange = {
+                        viewModel.updateCommunityField(
+                            communityId = community.id,
+                            changedFieldName = "name",
+                            newValue = it
+                        )
+                    },
+                    onDescriptionChange = {
+                        viewModel.updateCommunityField(
+                            communityId = community.id,
+                            changedFieldName = "description",
+                            newValue = it
+                        )
+                    },
+                    onDismiss = {
+                        updateNameOrDescriptionBottomSheetValue = null
+                        viewModel.updateCommunityFieldState.value = Resource.Idle()
+                    },
+                    viewModel = viewModel
                 )
+            }
+            if (commentsForPost != null && rolePriority != null) {
+                if (currentUser != null) {
+                    CommentsBottomSheet(
+                        state = commentsBottomSheetState,
+                        communityId = community.id,
+                        postId = commentsForPost!!,
+                        rolePriority = rolePriority,
+                        onDismiss = { commentsForPost = null },
+                        vmPost = vmPost,
+                        currentUser = currentUser,
+                        reportUserDialog = { reportUserDialog = it }
+                    )
+                }
             }
             if (showRequestsBottomSheet) {
                 RequestsBottomSheet(
                     state = requestsBottomSheetState,
                     community = community,
-                    numOfRequests = numberOfRequests.data,
+                    numOfRequests = numberOfRequests,
                     onDismiss = {
                         scope.launch { requestsBottomSheetState.hide() }.invokeOnCompletion {
                             if (!requestsBottomSheetState.isVisible) {
@@ -446,44 +1108,182 @@ private fun Content(
                             }
                         }
                         viewModel.lastRequest = null
-                        viewModel.deleteRequestState.value = Resource.Idle()
+                        viewModel.rejectRequestState.value = Resource.Idle()
                         viewModel.acceptRequestState.value = Resource.Idle()
-                        viewModel.getNumberOfRequests(community.id!!)
+                        viewModel.getNumberOfRequests(community.id)
                         viewModel.getNumOfMembers(community.id)
-                    })
+                    },
+                    viewModel = viewModel
+                )
             }
-
-            Posts(
+            if (showSettingsBottomSheet) {
+                SettingsBottomSheet(
+                    state = settingsBottomSheetState,
+                    eventCreationRestriction = community.eventCreationRestriction,
+                    postSharingRestriction = community.postSharingRestriction,
+                    participationByRequestOnly = community.participationByRequestOnly,
+                    onEventCreationChange = {
+                        viewModel.updateCommunityField(
+                            communityId = community.id,
+                            changedFieldName = "eventCreationRestriction",
+                            newValue = it
+                        )
+                    },
+                    onPostSharingChange = {
+                        viewModel.updateCommunityField(
+                            communityId = community.id,
+                            changedFieldName = "postSharingRestriction",
+                            newValue = it
+                        )
+                    },
+                    onParticipationByRequestChange = {
+                        viewModel.updateCommunityField(
+                            communityId = community.id,
+                            changedFieldName = "participationByRequestOnly",
+                            newValue = it
+                        )
+                    },
+                    onDismiss = {
+                        showSettingsBottomSheet = false
+                        viewModel.updateCommunityFieldState.value = Resource.Idle()
+                    },
+                    viewModel = viewModel
+                )
+            }
+            CommunityFlow(
                 community = community,
-                numberOfMembers = numberOfMembers,
-                numOfActiveEvents = numOfActiveEvents,
+                numberOfMembers = numberOfMembers ?: 1,
+                numOfEvents = numOfEvents ?: 0,
                 rolePriority = rolePriority,
                 onMembersClick = {
                     showMembersBottomSheet = true
                     viewModel.getMembersWithPaging(
-                        communityId = community.id!!,
+                        communityId = community.id,
                         pageSize = 10
                     )
                 },
+                onEditClick = { isName, value ->
+                    updateNameOrDescriptionBottomSheetValue = isName to value
+                },
+                currentUser = currentUser,
                 onCommentClick = { postId ->
                     commentsForPost = postId
-                }
+                },
+                navController = navController,
+                onEventClick = { event ->
+                    showEventBottomSheet = event
+                },
+                vmPost = vmPost,
+                showSnackbar = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(it)
+                    }
+                },
+                onSendRequest = {
+                    if (currentUser != null) {
+                        if (currentUser.isEmailVerified) {
+                            if (userResource is Resource.Success) {
+                                if (userResource.data!!.tickets > 1) {
+                                    viewModel.sendJoinRequest(
+                                        communityId = community.id,
+                                        myUid = currentUser.uid,
+                                        newTickets = userResource.data.tickets - 2
+                                    )
+                                } else {
+                                    showTicketDialog = true
+                                }
+                            } else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(R.string.something_went_wrong)
+                                    )
+                                }
+                            }
+                        } else {
+                            showUnverifiedAccountAlertDialog = true
+                        }
+                    } else {
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.please_sign_in),
+                                withDismissAction = true,
+                                duration = SnackbarDuration.Long,
+                                actionLabel = context.getString(R.string.sign_in)
+                            )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> navController.navigate("log_in")
+                                SnackbarResult.Dismissed -> {}
+                            }
+                        }
+                    }
+
+                },
+                onJoinCommunity = {
+                    if (currentUser != null) {
+                        if (currentUser.isEmailVerified) {
+                            if (userResource is Resource.Success) {
+                                if (userResource.data!!.tickets > 1) {
+                                    viewModel.joinTheCommunity(
+                                        communityId = community.id,
+                                        myUid = currentUser.uid,
+                                        newTickets = userResource.data.tickets - 2
+                                    )
+                                } else {
+                                    showTicketDialog = true
+                                }
+                            } else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = context.getString(R.string.something_went_wrong)
+                                    )
+                                }
+                            }
+                        } else {
+                            showUnverifiedAccountAlertDialog = true
+                        }
+                    } else {
+                        scope.launch {
+                            val result = snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.please_sign_in),
+                                withDismissAction = true,
+                                duration = SnackbarDuration.Long,
+                                actionLabel = context.getString(R.string.sign_in)
+                            )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> navController.navigate("log_in")
+                                SnackbarResult.Dismissed -> {}
+                            }
+                        }
+                    }
+
+                },
+                didISendRequest = didISendRequest,
+                viewModelCommunity = viewModel,
+                showReportDialog = { reportDialog = it },
+                scope = scope,
+                snackbarHostState = snackbarHostState
             )
         }
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CommunityHeadLine(
     community: Community,
     onMembersClick: () -> Unit,
-    numberOfMembers: Resource<Int>,
-    rolePriority: Int,
-    numOfActiveEvents: Resource<Int>
+    numberOfMembers: Int,
+    onEditClick: (Boolean, String) -> Unit,
+    onEventClick: (Event) -> Unit,
+    rolePriority: Int?,
+    scope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
+    showSnackbar: (String) -> Unit,
+    viewModel: CommunityPageViewModel,
+    onEventListClick: () -> Unit,
+    numOfEvents: Int
 ) {
     val context = LocalContext.current
-    val viewModel: CommunityPageViewModel = hiltViewModel()
     val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionState =
             rememberPermissionState(permission = Manifest.permission.READ_MEDIA_IMAGES)
@@ -503,8 +1303,8 @@ fun CommunityHeadLine(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            if (rolePriority != CommunityRoles.Member.rolePriority) {
-                viewModel.updateCommunityPicture(uri, communityId = community.id!!)
+            if (rolePriority != CommunityRoles.Member.rolePriority && rolePriority != null) {
+                viewModel.updateCommunityPicture(uri, communityId = community.id)
             }
         }
     }
@@ -520,6 +1320,13 @@ fun CommunityHeadLine(
         }
     }
     var pictureOptionsExpanded by remember { mutableStateOf(false) }
+    val eventList = remember { mutableStateListOf<Event>() }
+    LaunchedEffect(viewModel.upcomingEventsState.value) {
+        if (viewModel.upcomingEventsState.value is Resource.Success) {
+            eventList.clear()
+            eventList.addAll(viewModel.upcomingEventsState.value.data!!)
+        }
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -530,11 +1337,8 @@ fun CommunityHeadLine(
             when (val resource = viewModel.updateCommunityPictureState.value) {
                 is Resource.Error -> {
                     pictureUpdating = false
-                    Toast.makeText(
-                        context,
-                        "We cannot process your request right now, please try again later",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showSnackbar(resource.messageResource?.let { context.getString(it) } ?: "")
+                    viewModel.updateCommunityPictureState.value = Resource.Idle()
                 }
 
                 is Resource.Idle -> {}
@@ -551,13 +1355,17 @@ fun CommunityHeadLine(
             modifier = Modifier
                 .size(100.dp)
                 .clickable {
-                    if (rolePriority != CommunityRoles.Member.rolePriority) {
+                    if (rolePriority != CommunityRoles.Member.rolePriority && rolePriority != null) {
                         pictureOptionsExpanded = true
                     }
                 }
         ) {
-            if (pictureUpdating){
-                CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+            if (pictureUpdating) {
+                CircularWavyProgressIndicator(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .align(Alignment.Center)
+                )
             }
             if (community.communityPictureUrl != null) {
                 GlideImage(
@@ -565,8 +1373,25 @@ fun CommunityHeadLine(
                     modifier = Modifier
                         .matchParentSize()
                         .clip(CircleShape),
+                    requestBuilder = {
+                        val thumbnailRequest = Glide
+                            .with(context)
+                            .asBitmap()
+                            .load(community.communityPictureUrl.toUri())
+                            .apply(RequestOptions().override(100))
+
+                        Glide
+                            .with(context)
+                            .asBitmap()
+                            .apply(
+                                RequestOptions()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            )
+                            .thumbnail(thumbnailRequest)
+                            .transition(withCrossFade())
+                    },
                     loading = {
-                        CircularProgressIndicator(
+                        CircularWavyProgressIndicator(
                             modifier = Modifier
                                 .fillMaxWidth(0.5f)
                                 .fillMaxHeight(0.5f)
@@ -574,7 +1399,7 @@ fun CommunityHeadLine(
                         )
                     },
                     failure = {
-                        CircularProgressIndicator(
+                        CircularWavyProgressIndicator(
                             modifier = Modifier
                                 .matchParentSize()
                                 .align(Alignment.Center)
@@ -599,7 +1424,7 @@ fun CommunityHeadLine(
             ) {
                 if (community.communityPictureUrl != null) {
                     DropdownMenuItem(
-                        text = { Text("Change Picture") },
+                        text = { Text(stringResource(R.string.change_picture)) },
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Rounded.RotateRight,
@@ -610,13 +1435,31 @@ fun CommunityHeadLine(
                             if (mediaIsGranted) {
                                 galleryLauncher.launch("image/*")
                             } else {
-                                permissionState.launchPermissionRequest()
+                                if (!permissionState.status.shouldShowRationale) {
+
+                                    scope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = context.getString(R.string.media_permission_rationale),
+                                            withDismissAction = true,
+                                            duration = SnackbarDuration.Long,
+                                            actionLabel = context.getString(R.string.permission_settings)
+                                        )
+                                        if (SnackbarResult.ActionPerformed == result){
+                                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                data = Uri.fromParts("package", context.packageName, null)
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                    }
+                                }else {
+                                    permissionState.launchPermissionRequest()
+                                }
                             }
                             pictureOptionsExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Remove Picture") },
+                        text = { Text(stringResource(R.string.remove_picture)) },
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Rounded.DeleteOutline,
@@ -625,13 +1468,13 @@ fun CommunityHeadLine(
                             )
                         },
                         onClick = {
-                            viewModel.updateCommunityPicture(null, communityId = community.id!!)
+                            viewModel.updateCommunityPicture(null, communityId = community.id)
                             pictureOptionsExpanded = false
                         }
                     )
                 } else {
                     DropdownMenuItem(
-                        text = { Text("Add Community Picture") },
+                        text = { Text(stringResource(R.string.add_community_picture)) },
                         trailingIcon = {
                             Icon(
                                 imageVector = Icons.Rounded.AddAPhoto,
@@ -642,7 +1485,25 @@ fun CommunityHeadLine(
                             if (mediaIsGranted) {
                                 galleryLauncher.launch("image/*")
                             } else {
-                                permissionState.launchPermissionRequest()
+                                if (!permissionState.status.shouldShowRationale) {
+
+                                    scope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = context.getString(R.string.media_permission_rationale),
+                                            withDismissAction = true,
+                                            duration = SnackbarDuration.Long,
+                                            actionLabel = context.getString(R.string.permission_settings)
+                                        )
+                                        if (SnackbarResult.ActionPerformed == result){
+                                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                data = Uri.fromParts("package", context.packageName, null)
+                                            }
+                                            context.startActivity(intent)
+                                        }
+                                    }
+                                }else {
+                                    permissionState.launchPermissionRequest()
+                                }
                             }
                             pictureOptionsExpanded = false
                         }
@@ -654,13 +1515,34 @@ fun CommunityHeadLine(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = community.name,
-                style = MaterialTheme.typography.headlineMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+            ListItem(
+                headlineContent = {
+                    Text(
+                        text = community.name,
+                        style = MaterialTheme.typography.headlineMedium,
+                        maxLines = 3,
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
+                trailingContent = if (rolePriority != CommunityRoles.Member.rolePriority && rolePriority != null) {
+                    {
+                        IconButton(
+                            onClick = {
+                                onEditClick(true, community.name)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "change name"
+                            )
+                        }
+                    }
+                } else null,
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.padding(horizontal = 5.dp)
             )
+
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
@@ -676,23 +1558,50 @@ fun CommunityHeadLine(
             shape = RoundedCornerShape(10.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            ) {
-                Text(
-                    text = "Community Description",
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Text(
-                    text = community.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = if (!expendedDescription) 2 else Int.MAX_VALUE,
-                    overflow = TextOverflow.Ellipsis
-                )
+
+            Row(Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .weight(5f)
+                ) {
+                    Text(
+                        text = stringResource(R.string.community_description),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = community.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = if (!expendedDescription) 2 else Int.MAX_VALUE,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (rolePriority != CommunityRoles.Member.rolePriority && rolePriority != null) {
+                    IconButton(
+                        onClick = {
+                            onEditClick(false, community.description)
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Edit,
+                            contentDescription = "edit description"
+                        )
+                    }
+                }
             }
+
         }
+    }
+    if (rolePriority != null) {
+
+        UpcomingEvents(
+            onEventListClick = onEventListClick,
+            onEventClick = { event ->
+                onEventClick(event)
+            },
+            eventList = eventList
+        )
     }
 
     Row(
@@ -709,651 +1618,31 @@ fun CommunityHeadLine(
                 contentDescription = "members",
                 modifier = Modifier.padding(end = 3.dp)
             )
-            if (numberOfMembers is Resource.Success) {
-                Text(
-                    text = "${numberOfMembers.data!!} members"
-                )
-            } else {
-                Text(
-                    text = "1 members"
-                )
-            }
+            Text(
+                text = "$numberOfMembers ${stringResource(R.string.member).lowercase()}"
+            )
         }
         TextButton(
-            onClick = {},
+            onClick = onEventListClick,
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier.padding(9.dp)
         ) {
             Icon(
                 imageVector = Icons.Outlined.Celebration,
-                contentDescription = "active events",
+                contentDescription = "events",
                 modifier = Modifier.padding(end = 3.dp)
             )
-            if (numOfActiveEvents is Resource.Success) {
-                Text(
-                    text = "${numOfActiveEvents.data!!} active events"
-                )
-            } else {
-                Text(
-                    text = "0 active events"
-                )
-            }
+            Text(
+                text = "$numOfEvents ${stringResource(R.string.event).lowercase()}"
+            )
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun RequestsBottomSheet(
-    state: SheetState,
-    community: Community,
-    numOfRequests: Int?,
-    viewModel: CommunityPageViewModel = hiltViewModel(),
-    onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-    val requests by viewModel.joiningRequests.collectAsState()
-    val requestsList = remember { mutableStateListOf<JoiningRequestForCommunity>() }
-    var isLoading by remember { mutableStateOf(false) }
-    var hasError by remember { mutableStateOf(false) }
-
-    LaunchedEffect(viewModel.deleteRequestState.value) {
-        when (val resource = viewModel.deleteRequestState.value) {
-            is Resource.Error -> {
-                Toast.makeText(
-                    context,
-                    "The request cannot be deleted right now, please check your connection.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            is Resource.Success -> {
-                requestsList.remove(requestsList.find { it.uid!! == resource.data!! })
-                if (requestsList.isEmpty()) {
-                    viewModel.getRequestsWithPaging(
-                        communityId = community.id!!,
-                        pageSize = 10
-                    )
-                }
-                Toast.makeText(context, "Request deleted", Toast.LENGTH_SHORT).show()
-            }
-
-            else -> {}
-        }
-    }
-    LaunchedEffect(viewModel.acceptRequestState.value) {
-        when (val resource = viewModel.acceptRequestState.value) {
-            is Resource.Error -> {
-                Toast.makeText(
-                    context,
-                    "We cannot process your transaction at this time, please try again later.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            is Resource.Success -> {
-                val request = requestsList.find { it.uid == resource.data!! }
-                val index = requestsList.indexOf(request)
-                requestsList[index] = request!!.copy(accepted = true)
-            }
-
-            else -> {}
-        }
-    }
-
-    ModalBottomSheet(
-        sheetState = state,
-        onDismissRequest = {
-            onDismiss()
-            requestsList.clear()
-        }
-    ) {
-        Text(
-            text = "Joining Requests",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(10.dp)
-        )
-        LaunchedEffect(requests) {
-            when (requests) {
-                is Resource.Error -> {
-                    isLoading = false
-                    hasError = true
-                }
-
-                is Resource.Idle -> {}
-                is Resource.Loading -> {
-                    isLoading = true
-                }
-
-                is Resource.Success -> {
-                    isLoading = false
-                    hasError = false
-                    requestsList.addAll(requests.data!!)
-                }
-            }
-        }
-
-
-        LazyColumn(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            items(requestsList) { requestObject ->
-                JoiningRequestRow(
-                    request = requestObject,
-                    onDeleteRequest = {
-                        viewModel.deleteRequest(
-                            communityId = community.id!!,
-                            uid = requestObject.uid!!
-                        )
-                    },
-                    onAcceptRequest = {
-                        val communityModel = JoinedCommunities(
-                            id = community.id!!,
-                            rolePriority = CommunityRoles.Member.rolePriority
-                        )
-                        viewModel.acceptRequest(
-                            community = communityModel,
-                            requestObject = requestObject
-                        )
-                    }
-                )
-            }
-            item {
-                if (isLoading) {
-                    CircularProgressIndicator()
-                } else if (hasError) {
-                    Text(
-                        "Requests can not be loaded right now. Please try again.",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                } else {
-                    if (requestsList.isEmpty()) {
-                        Row(
-                            modifier = Modifier
-                                .padding(vertical = 15.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "empty"
-                            )
-                            Text(
-                                text = "There is no request to join :(",
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(10.dp)
-                            )
-                        }
-                    }
-                    if (viewModel.lastRequest != null && requestsList.size < (numOfRequests
-                            ?: Int.MAX_VALUE)
-                    ) {
-                        TextButton(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = {
-                                viewModel.getRequestsWithPaging(
-                                    communityId = community.id!!,
-                                    pageSize = 10
-                                )
-                            }
-                        ) {
-                            Text(text = "See More", style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-}
-
-@Composable
-private fun JoiningRequestRow(
-    request: JoiningRequestForCommunity,
-    onDeleteRequest: () -> Unit,
-    onAcceptRequest: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(50.dp)) {
-                if (request.profilePictureUrl != null) {
-                    GlideImage(
-                        imageModel = { request.profilePictureUrl.toUri() },
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(CircleShape),
-                        loading = {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .align(Alignment.Center)
-                            )
-                        }
-                    )
-                } else {
-                    Image(
-                        imageVector = Icons.Rounded.Person,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.LightGray, CircleShape)
-                            .clip(
-                                CircleShape
-                            )
-                    )
-                }
-            }
-            Column(horizontalAlignment = Alignment.Start) {
-
-                Text(
-                    text = request.userName,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-                Text(
-                    text = convertMillisToLocalizeDate(request.requestDate),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(horizontal = 10.dp)
-                )
-            }
-
-        }
-        if (request.accepted) {
-            ElevatedButton(
-                onClick = {},
-                shape = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(horizontal = 2.dp),
-            ) {
-                Text("Member", modifier = Modifier.padding(horizontal = 2.dp))
-            }
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-
-                IconButton(
-                    onClick = onDeleteRequest
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.DeleteOutline,
-                        contentDescription = null,
-                        tint = Color.Red
-                    )
-                }
-                ElevatedButton(
-                    onClick = onAcceptRequest,
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 2.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.CheckCircleOutline,
-                        contentDescription = null
-                    )
-                    Text(text = "Accept", modifier = Modifier.padding(horizontal = 2.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun convertMillisToLocalizeDate(millis: Long): String {
-    var currentTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
-
-    // Bir LaunchedEffect kullanarak sürekli güncelleme yapıyoruz.
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(60100) // Her dakikada güncellenir.
-            currentTime = System.currentTimeMillis() // Sistemin saatini güncelle.
-        }
-    }
-
-    val diff = currentTime - millis
-
-    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
-    val hours = TimeUnit.MILLISECONDS.toHours(diff)
-    val days = TimeUnit.MILLISECONDS.toDays(diff)
-
-    return when {
-        days > 7 -> convertMillisToDate(millis)
-        days > 0 -> "$days d ago"
-        hours > 0 -> "$hours h ago"
-        minutes > 0 -> "$minutes m ago"
-        else -> "now"
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun MembersBottomSheet(
-    userRole: Int,
-    state: SheetState,
-    communityId: String,
-    numOfMembers: Int?,
-    onDismiss: () -> Unit,
-    onDeleteUser: (uid: String) -> Unit,
-    onAddModeratorUser: (uid: String) -> Unit,
-    onRemoveModeratorUser: (uid: String) -> Unit,
-    viewModel: CommunityPageViewModel = hiltViewModel()
-) {
-    val context = LocalContext.current
-    val members by viewModel.members.collectAsState()
-    val memberList = remember { mutableStateListOf<Member>() }
-    var isLoading by remember { mutableStateOf(false) }
-    var hasError by remember { mutableStateOf(false) }
-    var isProcessing by remember { mutableStateOf(false) }
-
-    if (isProcessing) {
-        Box(Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-    }
-
-    LaunchedEffect(viewModel.removeMemberState.value) {
-        when (val resource = viewModel.removeMemberState.value) {
-            is Resource.Error -> {
-                isProcessing = false
-                Toast.makeText(
-                    context,
-                    "We cannot process your transaction at this time, please try again later.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            is Resource.Idle -> {}
-            is Resource.Loading -> {
-                isProcessing = true
-            }
-
-            is Resource.Success -> {
-                isProcessing = false
-                memberList.remove(memberList.find { it.uid == resource.data!! })
-                if (memberList.isEmpty()) {
-                    viewModel.getMembersWithPaging(communityId = communityId, pageSize = 10)
-                }
-                viewModel.removeMemberState.value = Resource.Idle()
-            }
-        }
-    }
-    LaunchedEffect(viewModel.promoteMemberState.value) {
-        when (val resource = viewModel.promoteMemberState.value) {
-            is Resource.Error -> {
-                isProcessing = false
-                Toast.makeText(
-                    context,
-                    "We cannot process your transaction at this time, please try again later.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            is Resource.Idle -> {}
-            is Resource.Loading -> {
-                isProcessing = true
-            }
-
-            is Resource.Success -> {
-                isProcessing = false
-                val member = memberList.find { it.uid == resource.data!! }
-                val index = memberList.indexOf(member)
-                memberList[index] =
-                    member!!.copy(rolePriority = CommunityRoles.Moderator.rolePriority)
-                viewModel.promoteMemberState.value = Resource.Idle()
-            }
-        }
-    }
-    LaunchedEffect(viewModel.demoteMemberState.value) {
-        when (val resource = viewModel.demoteMemberState.value) {
-            is Resource.Error -> {
-                isProcessing = false
-                Toast.makeText(
-                    context,
-                    "We cannot process your transaction at this time, please try again later.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            is Resource.Idle -> {}
-            is Resource.Loading -> {
-                isProcessing = true
-            }
-
-            is Resource.Success -> {
-                isProcessing = false
-                val member = memberList.find { it.uid == resource.data!! }
-                val index = memberList.indexOf(member)
-                memberList[index] = member!!.copy(rolePriority = CommunityRoles.Member.rolePriority)
-                viewModel.demoteMemberState.value = Resource.Idle()
-            }
-        }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = state
-    ) {
-        Text(
-            text = "Community Members",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(10.dp)
-        )
-        LaunchedEffect(members) {
-            when (members) {
-                is Resource.Error -> {
-                    isLoading = false
-                    hasError = true
-                }
-
-                is Resource.Idle -> {}
-                is Resource.Loading -> {
-                    isLoading = true
-                }
-
-                is Resource.Success -> {
-                    isLoading = false
-                    hasError = false
-                    memberList.addAll(members.data!!)
-                }
-            }
-        }
-
-        LazyColumn(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            items(memberList) {
-                MemberRow(
-                    member = it, userRole = userRole,
-                    onDeleteUser = { onDeleteUser(it.uid) },
-                    onAddModeratorUser = { onAddModeratorUser(it.uid) },
-                    onRemoveModeratorUser = { onRemoveModeratorUser(it.uid) }
-                )
-            }
-            item {
-                if (isLoading) {
-                    CircularProgressIndicator()
-                } else if (hasError) {
-                    Text(
-                        "Members can not be loaded right now. Please try again.",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                } else {
-                    if (viewModel.lastMember != null && memberList.size < (numOfMembers
-                            ?: Int.MAX_VALUE)
-                    ) {
-                        TextButton(
-                            modifier = Modifier.padding(4.dp),
-                            onClick = {
-                                viewModel.getMembersWithPaging(
-                                    communityId = communityId,
-                                    pageSize = 10
-                                )
-                            }
-                        ) {
-                            Text(text = "See More", style = MaterialTheme.typography.bodySmall)
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-}
-
-@Composable
-fun MemberRow(
-    member: Member,
-    userRole: Int,
-    onDeleteUser: () -> Unit,
-    onAddModeratorUser: () -> Unit,
-    onRemoveModeratorUser: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row {
-            Box(modifier = Modifier.size(50.dp)) {
-                if (member.profileImageUrl != null) {
-                    GlideImage(
-                        imageModel = { member.profileImageUrl.toUri() },
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(CircleShape),
-                        loading = {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .align(Alignment.Center)
-                            )
-                        }
-                    )
-                } else {
-                    Image(
-                        imageVector = Icons.Rounded.Person,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(Color.LightGray, CircleShape)
-                            .clip(
-                                CircleShape
-                            )
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier.padding(horizontal = 10.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = member.userName,
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Text(
-                    text = roleNameFromRoleValue(member.rolePriority),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .background(
-                            color = when (member.rolePriority) {
-                                CommunityRoles.Admin.rolePriority -> Green1
-                                CommunityRoles.Moderator.rolePriority -> Orange2
-                                else -> Color.Transparent
-                            },
-                            shape = RoundedCornerShape(3.dp)
-                        )
-                        .padding(2.dp)
-                )
-            }
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            when (userRole) {
-                CommunityRoles.Admin.rolePriority -> {
-                    when (member.rolePriority) {
-                        CommunityRoles.Member.rolePriority -> {
-                            IconButton(
-                                onClick = onAddModeratorUser
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.AddModerator,
-                                    contentDescription = "add moderator"
-                                )
-                            }
-                            IconButton(
-                                onClick = onDeleteUser
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.PersonRemove,
-                                    tint = MaterialTheme.colorScheme.error,
-                                    contentDescription = "remove"
-                                )
-                            }
-                        }
-
-                        CommunityRoles.Moderator.rolePriority -> {
-                            IconButton(
-                                onClick = onRemoveModeratorUser
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.RemoveModerator,
-                                    contentDescription = "remove moderator"
-                                )
-                            }
-                            IconButton(
-                                onClick = onDeleteUser
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.PersonRemove,
-                                    tint = MaterialTheme.colorScheme.error,
-                                    contentDescription = "remove"
-                                )
-                            }
-                        }
-
-                        else -> {}
-                    }
-
-                }
-
-                CommunityRoles.Moderator.rolePriority -> {
-                    if (member.rolePriority == CommunityRoles.Member.rolePriority) {
-                        IconButton(
-                            onClick = onAddModeratorUser
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.AddModerator,
-                                contentDescription = "remove"
-                            )
-                        }
-                        IconButton(
-                            onClick = onDeleteUser
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.PersonRemove,
-                                tint = MaterialTheme.colorScheme.error,
-                                contentDescription = "remove"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-}
-
-@Composable
-private fun PromoteDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
-    val viewModel: CommunityPageViewModel = hiltViewModel()
+private fun PromoteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -1362,12 +1651,9 @@ private fun PromoteDialog(uid: String, communityId: String, onDismiss: () -> Uni
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
-                onClick = {
-                    viewModel.promoteMember(communityId = communityId, uid = uid)
-                    onDismiss()
-                }
+                onClick = onConfirm
             ) {
-                Text(text = "Promote")
+                Text(text = stringResource(R.string.promote))
             }
         },
         dismissButton = {
@@ -1375,7 +1661,7 @@ private fun PromoteDialog(uid: String, communityId: String, onDismiss: () -> Uni
                 onClick = onDismiss
             ) {
                 Text(
-                    text = "Cancel"
+                    text = stringResource(R.string.cancel)
                 )
             }
         },
@@ -1387,20 +1673,18 @@ private fun PromoteDialog(uid: String, communityId: String, onDismiss: () -> Uni
         },
         text = {
             Text(
-                text = "Are you sure you want to promote this user to moderator?" +
-                        "\nOnly admin is able to demote moderators back to members." +
-                        "\n\nBy promoting the user, you will grant the following permissions:" +
-                        "\n• Editing community settings" +
-                        "\n• Promoting members to moderators" +
-                        "\n• Creating events associated with the community if event creation restriction is on"
+                text = stringResource(R.string.promote_dialog_text)
             )
         }
     )
 }
 
 @Composable
-fun DemoteDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
-    val viewModel: CommunityPageViewModel = hiltViewModel()
+private fun MakeAdminDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -1409,12 +1693,9 @@ fun DemoteDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ),
-                onClick = {
-                    viewModel.demoteMember(communityId = communityId, uid = uid)
-                    onDismiss()
-                }
+                onClick = onConfirm
             ) {
-                Text(text = "Demote")
+                Text(text = stringResource(R.string.make_admin))
             }
         },
         dismissButton = {
@@ -1422,7 +1703,45 @@ fun DemoteDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
                 onClick = onDismiss
             ) {
                 Text(
-                    text = "Cancel"
+                    text = stringResource(R.string.cancel)
+                )
+            }
+        },
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.ArrowUpward,
+                contentDescription = "make user admin"
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.make_admin_dialog_text)
+            )
+        }
+    )
+}
+
+@Composable
+fun DemoteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            ElevatedButton(
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ),
+                onClick = onConfirm
+            ) {
+                Text(text = stringResource(R.string.demote))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel)
                 )
             }
         },
@@ -1434,20 +1753,14 @@ fun DemoteDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
         },
         text = {
             Text(
-                text = "Are you sure you want to demote this user to member?" +
-                        "\nOnly admin is able to promote members back to moderators." +
-                        "\n\nBy demoting the user, you will revoke the following permissions:" +
-                        "\n• Editing community settings" +
-                        "\n• Promoting members to moderators" +
-                        "\n• Creating events associated with the community if event creation restriction is on"
+                text = stringResource(R.string.demote_dialog_text)
             )
         }
     )
 }
 
 @Composable
-private fun RemoveMemberDialog(uid: String, communityId: String, onDismiss: () -> Unit) {
-    val viewModel: CommunityPageViewModel = hiltViewModel()
+private fun RemoveMemberDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -1456,12 +1769,9 @@ private fun RemoveMemberDialog(uid: String, communityId: String, onDismiss: () -
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
-                onClick = {
-                    viewModel.removeMember(communityId = communityId, uid = uid)
-                    onDismiss()
-                }
+                onClick = onConfirm
             ) {
-                Text(text = "Remove")
+                Text(text = stringResource(R.string.remove))
             }
         },
         dismissButton = {
@@ -1469,7 +1779,7 @@ private fun RemoveMemberDialog(uid: String, communityId: String, onDismiss: () -
                 onClick = onDismiss
             ) {
                 Text(
-                    text = "Cancel"
+                    text = stringResource(R.string.cancel)
                 )
             }
         },
@@ -1481,7 +1791,7 @@ private fun RemoveMemberDialog(uid: String, communityId: String, onDismiss: () -
         },
         text = {
             Text(
-                text = "Are you sure you want to remove this user from the community?"
+                text = stringResource(R.string.remove_from_community_dialog_text)
             )
         }
     )
@@ -1491,7 +1801,6 @@ private fun RemoveMemberDialog(uid: String, communityId: String, onDismiss: () -
 @Composable
 private fun ShareDialog(communityId: String, onDismiss: () -> Unit) {
     val clipboardManager = LocalClipboardManager.current
-    val context = LocalContext.current
     Dialog(
         onDismissRequest = onDismiss,
     ) {
@@ -1500,59 +1809,123 @@ private fun ShareDialog(communityId: String, onDismiss: () -> Unit) {
             color = MaterialTheme.colorScheme.surfaceContainerHigh
         ) {
             Column(modifier = Modifier.padding(10.dp)) {
-                Text(text = "Community ID:", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "${stringResource(R.string.community_id)}:",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text(text = communityId, style = MaterialTheme.typography.titleMedium)
                     IconButton(onClick = {
                         clipboardManager.setText(AnnotatedString(communityId))
-                        Toast.makeText(context, "ID copied", Toast.LENGTH_SHORT).show()
                     }) {
                         Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = "copy")
                     }
                 }
-                Text(text = "People can find this community by using this Comment ID")
+                Text(text = stringResource(R.string.share_dialog_text))
             }
         }
     }
 
 }
 
+@Composable
+fun LeavingDialog(
+    userRolePriority: Int?,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+
+    if (userRolePriority == CommunityRoles.Admin.rolePriority) {
+        AlertDialog(
+            icon = {
+                Icon(
+                    imageVector = Icons.Rounded.Warning,
+                    contentDescription = "cannot leave the community"
+                )
+            },
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(R.string.make_someone_else_admin_title)) },
+            text = { Text(stringResource(R.string.make_someone_else_admin_text)) },
+            confirmButton = {
+                ElevatedButton(
+                    onClick = onDismiss
+                ) {
+                    Text(stringResource(R.string.got_it))
+                }
+            })
+    } else {
+        AlertDialog(
+            text = { Text(stringResource(R.string.leave_community_dialog_text)) },
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                ElevatedButton(
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
+                    Text(stringResource(R.string.leave))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismiss
+                ) {
+                    Text(
+                        text = stringResource(R.string.cancel)
+                    )
+                }
+            })
+    }
+}
+
 @Preview
 @Composable
 private fun CommunityPagePreview() {
-    /*var pictureOptionsExpanded by remember { mutableStateOf(false) }
-    Box {
-        DropdownMenu(
-            expanded = pictureOptionsExpanded,
-            onDismissRequest = { pictureOptionsExpanded = false },
-            tonalElevation = 3.dp,
-            shadowElevation = 3.dp
+    var expendedDescription by remember { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth()) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.96f)
+                .align(Alignment.CenterHorizontally)
+                .clickable {
+                    expendedDescription = !expendedDescription
+                },
+            shape = RoundedCornerShape(10.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerLow
         ) {
-            if (true) {
-                DropdownMenuItem(
-                    text = {Text("Change Picture")},
-                    trailingIcon = {Icon(imageVector = Icons.AutoMirrored.Rounded.RotateRight,
-                        contentDescription = "change photo")},
-                    onClick = {}
-                )
-                DropdownMenuItem(
-                    text = {Text("Remove Picture")},
-                    trailingIcon = {Icon(imageVector = Icons.Rounded.DeleteOutline,
-                        contentDescription = "remove photo",
-                        tint = Color.Red)},
-                    onClick = {}
-                )
-            }else{
-                DropdownMenuItem(
-                    text = { Text("Add Community Picture") },
-                    trailingIcon = {Icon(imageVector = Icons.Rounded.AddAPhoto, contentDescription = "add a photo")},
-                    onClick = {}
-                )
+            Row(Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .weight(5f)
+                ) {
+                    Text(
+                        text = "Community Description",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "DescriptionDescriptionDescriptionDescriptionDescription" +
+                                "DescriptionDescriptionDescription" +
+                                "DescriptionDescriptionDescriptionDescription" +
+                                "DescriptionDescription",
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = if (!expendedDescription) 2 else Int.MAX_VALUE,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "edit description")
+                }
             }
+
         }
-    }*/
-
-
+    }
 }
